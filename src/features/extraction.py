@@ -8,7 +8,6 @@ def compute_ste(frames: np.ndarray) -> np.ndarray:
         return np.sum(frames**2)
     return np.sum(frames**2, axis=1)
 
-
 def normalize_minmax(feature: np.ndarray) -> np.ndarray:
     f_min = np.min(feature)
     f_max = np.max(feature)
