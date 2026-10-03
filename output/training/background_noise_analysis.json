@@ -1,0 +1,64 @@
+{
+  "definition": "speech_to_silence_power",
+  "formula": "10*log10(mean(speech_samples**2)/mean(silence_samples**2))",
+  "interpretation": "observed speech-plus-noise to LAB-silence power contrast; not clean-speech SNR",
+  "training_directory": "D:\\HK1 2026_2027\\XLTHS\\Baitap\\XLTHS_GK\\data\\tinhieuhuanluyen",
+  "files": [
+    {
+      "wav": "phone_F1.wav",
+      "fs": 16000,
+      "environment": "phone",
+      "power_definition": "sample-weighted mean(x[n]**2); squared normalized-amplitude units for PCM-scaled audio; DC included",
+      "silence_noise_power": 9.141032524074953e-05,
+      "observed_speech_power": 0.021789419132039405,
+      "silence_samples": 16160,
+      "speech_samples": 35520,
+      "uncovered_samples": 160,
+      "total_samples": 51840,
+      "observed_power_contrast_db": 23.77250398687938,
+      "ratio_status": "finite"
+    },
+    {
+      "wav": "phone_M1.wav",
+      "fs": 16000,
+      "environment": "phone",
+      "power_definition": "sample-weighted mean(x[n]**2); squared normalized-amplitude units for PCM-scaled audio; DC included",
+      "silence_noise_power": 1.2266908135743589e-05,
+      "observed_speech_power": 0.0026134448302293414,
+      "silence_samples": 17440,
+      "speech_samples": 48960,
+      "uncovered_samples": 160,
+      "total_samples": 66560,
+      "observed_power_contrast_db": 23.28478223634772,
+      "ratio_status": "finite"
+    },
+    {
+      "wav": "studio_F1.wav",
+      "fs": 44100,
+      "environment": "studio",
+      "power_definition": "sample-weighted mean(x[n]**2); squared normalized-amplitude units for PCM-scaled audio; DC included",
+      "silence_noise_power": 7.634926525659181e-07,
+      "observed_speech_power": 0.005750358902982303,
+      "silence_samples": 61299,
+      "speech_samples": 64827,
+      "uncovered_samples": 141,
+      "total_samples": 126267,
+      "observed_power_contrast_db": 38.7689008959662,
+      "ratio_status": "finite"
+    },
+    {
+      "wav": "studio_M1.wav",
+      "fs": 44100,
+      "environment": "studio",
+      "power_definition": "sample-weighted mean(x[n]**2); squared normalized-amplitude units for PCM-scaled audio; DC included",
+      "silence_noise_power": 5.867565756954236e-07,
+      "observed_speech_power": 0.00353874442223819,
+      "silence_samples": 67914,
+      "speech_samples": 52479,
+      "uncovered_samples": 7,
+      "total_samples": 120400,
+      "observed_power_contrast_db": 37.803912324667515,
+      "ratio_status": "finite"
+    }
+  ]
+}

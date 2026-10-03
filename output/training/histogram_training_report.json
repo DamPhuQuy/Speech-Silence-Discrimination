@@ -1,0 +1,49 @@
+{
+  "training_directory": "D:\\HK1 2026_2027\\XLTHS\\Baitap\\XLTHS_GK\\data\\tinhieuhuanluyen",
+  "number_of_wavs": 4,
+  "files": [
+    {
+      "wav": "phone_F1.wav",
+      "fs": 16000,
+      "frames": 322,
+      "frame_length_samples": 400,
+      "frame_shift_samples": 160
+    },
+    {
+      "wav": "phone_M1.wav",
+      "fs": 16000,
+      "frames": 414,
+      "frame_length_samples": 400,
+      "frame_shift_samples": 160
+    },
+    {
+      "wav": "studio_F1.wav",
+      "fs": 44100,
+      "frames": 284,
+      "frame_length_samples": 1102,
+      "frame_shift_samples": 441
+    },
+    {
+      "wav": "studio_M1.wav",
+      "fs": 44100,
+      "frames": 271,
+      "frame_length_samples": 1102,
+      "frame_shift_samples": 441
+    }
+  ],
+  "feature": "logste",
+  "total_combined_frames": 1291,
+  "parameters": {
+    "frame_duration_ms": 25.0,
+    "frame_shift_ms": 10.0,
+    "epsilon": 1e-12,
+    "num_bins": 40,
+    "smooth_window": 3,
+    "weight": 2.0,
+    "min_peak_distance": 4,
+    "min_relative_height": 0.1
+  },
+  "m1": -3.206248013637042,
+  "m2": 1.8673591422481692,
+  "threshold": -1.5150456283419718
+}

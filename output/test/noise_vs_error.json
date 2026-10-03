@@ -1,0 +1,67 @@
+{
+  "metric_name": "Speech/Silence Power Contrast (dB)",
+  "metric_definition": "10*log10(P_observed_speech/P_silence); LAB-based sample-weighted mean-square powers; observed speech includes background noise; not clean-speech SNR",
+  "scope": "test_evaluation_only",
+  "number_of_wavs": 4,
+  "frozen_threshold": -2.4375196566847372,
+  "lock_sha256": "c4568831b70fa51e00516c8dafff94087abbc3abdbeef649540075501b91d052",
+  "files": [
+    {
+      "file": "phone_F2.wav",
+      "recording_environment": "phone",
+      "recording_environment_source": "filename_prefix",
+      "power_contrast_db": 24.772882353154234,
+      "power_contrast_status": "finite",
+      "GT_boundary_count": 2,
+      "predicted_boundary_count": 4,
+      "matched_boundary_count": 2,
+      "extra_predicted_boundaries": 2,
+      "missed_GT_boundaries": 0,
+      "MAE_ms": 44.99999999999993,
+      "RMSE_ms": 46.703854230673485
+    },
+    {
+      "file": "phone_M2.wav",
+      "recording_environment": "phone",
+      "recording_environment_source": "filename_prefix",
+      "power_contrast_db": 27.001245369954997,
+      "power_contrast_status": "finite",
+      "GT_boundary_count": 2,
+      "predicted_boundary_count": 2,
+      "matched_boundary_count": 2,
+      "extra_predicted_boundaries": 0,
+      "missed_GT_boundaries": 0,
+      "MAE_ms": 9.999999999999842,
+      "RMSE_ms": 10.307764064043972
+    },
+    {
+      "file": "studio_F2.wav",
+      "recording_environment": "studio",
+      "recording_environment_source": "filename_prefix",
+      "power_contrast_db": 49.295720193481,
+      "power_contrast_status": "finite",
+      "GT_boundary_count": 2,
+      "predicted_boundary_count": 2,
+      "matched_boundary_count": 2,
+      "extra_predicted_boundaries": 0,
+      "missed_GT_boundaries": 0,
+      "MAE_ms": 2.5056689342405347,
+      "RMSE_ms": 2.5056689342405347
+    },
+    {
+      "file": "studio_M2.wav",
+      "recording_environment": "studio",
+      "recording_environment_source": "filename_prefix",
+      "power_contrast_db": 37.67196957419809,
+      "power_contrast_status": "finite",
+      "GT_boundary_count": 2,
+      "predicted_boundary_count": 2,
+      "matched_boundary_count": 2,
+      "extra_predicted_boundaries": 0,
+      "missed_GT_boundaries": 0,
+      "MAE_ms": 14.999999999999929,
+      "RMSE_ms": 15.205975386854073
+    }
+  ],
+  "interpretation": "Environment-group observations (finite values only): phone: mean contrast 25.887 dB (2 files); studio: mean contrast 43.484 dB (2 files). The phone group has lower mean Speech/Silence Power Contrast than the studio group in this batch. These are descriptive observations from 4 test recordings, not evidence of a causal relationship between noise and boundary error. Environment groups follow supplied metadata; the project's phone/studio groups come from filename prefixes, not measured room conditions. Contrast also depends on speech level/content and is not clean-speech SNR. MAE/RMSE use matched boundaries only; extra and missed boundaries must also be considered."
+}
