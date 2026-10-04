@@ -1,0 +1,1 @@
+"""Speech/silence segmentation project."""

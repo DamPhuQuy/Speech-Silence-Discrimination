@@ -1,0 +1,2781 @@
+{
+  "scope": "training_only",
+  "training_directory": "D:\\HK1 2026_2027\\XLTHS\\Baitap\\XLTHS_GK\\data\\tinhieuhuanluyen",
+  "baseline": {
+    "feature": "logste",
+    "num_bins": 40,
+    "smooth_window": 3,
+    "weight": 2.0
+  },
+  "fixed_parameters": {
+    "frame_duration_ms": 25.0,
+    "frame_shift_ms": 10.0,
+    "epsilon": 1e-12,
+    "min_peak_distance": 4,
+    "min_relative_height": 0.1,
+    "min_silence_ms": 200.0,
+    "tolerance_ms": 100.0
+  },
+  "selection_rule": "Require a successful fit/evaluation, complete LAB coverage of frame centers, and at least one boundary match. Minimize unmatched GT boundaries, then unmatched predicted boundaries, then pooled training MAE, then pooled training RMSE. Errors are rounded to 9 decimal places only for tie handling; exact ties keep the incoming configuration.",
+  "candidate_plan": [
+    {
+      "factor": "feature",
+      "values": [
+        "logste",
+        "ste",
+        "ma",
+        "logma"
+      ]
+    },
+    {
+      "factor": "num_bins",
+      "values": [
+        20,
+        30,
+        40,
+        50,
+        60
+      ]
+    },
+    {
+      "factor": "smooth_window",
+      "values": [
+        1,
+        3,
+        5,
+        7
+      ]
+    },
+    {
+      "factor": "weight",
+      "values": [
+        1.0,
+        2.0,
+        3.0,
+        5.0
+      ]
+    }
+  ],
+  "number_of_unique_fits": 14,
+  "number_of_stage_observations": 17,
+  "training_files": [
+    {
+      "wav": "phone_F1.wav",
+      "fs": 16000,
+      "frames": 322,
+      "frame_length_samples": 400,
+      "frame_shift_samples": 160
+    },
+    {
+      "wav": "phone_M1.wav",
+      "fs": 16000,
+      "frames": 414,
+      "frame_length_samples": 400,
+      "frame_shift_samples": 160
+    },
+    {
+      "wav": "studio_F1.wav",
+      "fs": 44100,
+      "frames": 284,
+      "frame_length_samples": 1102,
+      "frame_shift_samples": 441
+    },
+    {
+      "wav": "studio_M1.wav",
+      "fs": 44100,
+      "frames": 271,
+      "frame_length_samples": 1102,
+      "frame_shift_samples": 441
+    }
+  ],
+  "total_combined_frames": 1291,
+  "stages": [
+    {
+      "factor": "feature",
+      "incoming": {
+        "feature": "logste",
+        "num_bins": 40,
+        "smooth_window": 3,
+        "weight": 2.0
+      },
+      "selected": {
+        "feature": "logste",
+        "num_bins": 40,
+        "smooth_window": 3,
+        "weight": 2.0
+      },
+      "selected_configuration_id": "config_01",
+      "selection_key": [
+        0,
+        2,
+        14.376417234,
+        20.309398598
+      ]
+    },
+    {
+      "factor": "num_bins",
+      "incoming": {
+        "feature": "logste",
+        "num_bins": 40,
+        "smooth_window": 3,
+        "weight": 2.0
+      },
+      "selected": {
+        "feature": "logste",
+        "num_bins": 40,
+        "smooth_window": 3,
+        "weight": 2.0
+      },
+      "selected_configuration_id": "config_01",
+      "selection_key": [
+        0,
+        2,
+        14.376417234,
+        20.309398598
+      ]
+    },
+    {
+      "factor": "smooth_window",
+      "incoming": {
+        "feature": "logste",
+        "num_bins": 40,
+        "smooth_window": 3,
+        "weight": 2.0
+      },
+      "selected": {
+        "feature": "logste",
+        "num_bins": 40,
+        "smooth_window": 1,
+        "weight": 2.0
+      },
+      "selected_configuration_id": "config_09",
+      "selection_key": [
+        0,
+        2,
+        10.626417234,
+        17.852380767
+      ]
+    },
+    {
+      "factor": "weight",
+      "incoming": {
+        "feature": "logste",
+        "num_bins": 40,
+        "smooth_window": 1,
+        "weight": 2.0
+      },
+      "selected": {
+        "feature": "logste",
+        "num_bins": 40,
+        "smooth_window": 1,
+        "weight": 2.0
+      },
+      "selected_configuration_id": "config_09",
+      "selection_key": [
+        0,
+        2,
+        10.626417234,
+        17.852380767
+      ]
+    }
+  ],
+  "results": [
+    {
+      "feature": "logste",
+      "num_bins": 40,
+      "smooth_window": 3,
+      "weight": 2.0,
+      "m1": -3.206248013637042,
+      "m2": 1.8673591422481692,
+      "threshold": -1.5150456283419718,
+      "training_mae_ms": 14.376417233560119,
+      "training_rmse_ms": 20.309398597624885,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 10,
+      "matched_count": 8,
+      "unmatched_gt_count": 0,
+      "unmatched_predicted_count": 2,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.5375,
+              0.53
+            ],
+            [
+              2.7375,
+              2.75
+            ]
+          ],
+          "signed_errors_ms": [
+            7.499999999999951,
+            -12.500000000000178
+          ],
+          "absolute_errors_ms": [
+            7.499999999999951,
+            12.500000000000178
+          ],
+          "mae_ms": 10.000000000000064,
+          "rmse_ms": 10.30776406404424,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 4,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.4775,
+              0.46
+            ],
+            [
+              3.5175,
+              3.52
+            ]
+          ],
+          "signed_errors_ms": [
+            17.49999999999996,
+            -2.4999999999999467
+          ],
+          "absolute_errors_ms": [
+            17.49999999999996,
+            2.4999999999999467
+          ],
+          "mae_ms": 9.999999999999954,
+          "rmse_ms": 12.499999999999966,
+          "unmatched_predicted_boundaries": [
+            2.9375,
+            3.1775
+          ],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.6774943310657596,
+              0.68
+            ],
+            [
+              2.1474943310657597,
+              2.15
+            ]
+          ],
+          "signed_errors_ms": [
+            -2.5056689342404237,
+            -2.5056689342402017
+          ],
+          "absolute_errors_ms": [
+            2.5056689342404237,
+            2.5056689342402017
+          ],
+          "mae_ms": 2.5056689342403127,
+          "rmse_ms": 2.5056689342403127,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.9174943310657596,
+              0.87
+            ],
+            [
+              2.0374943310657594,
+              2.06
+            ]
+          ],
+          "signed_errors_ms": [
+            47.494331065759624,
+            -22.505668934240664
+          ],
+          "absolute_errors_ms": [
+            47.494331065759624,
+            22.505668934240664
+          ],
+          "mae_ms": 35.00000000000014,
+          "rmse_ms": 37.16326558284151,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 5,
+      "stage": "feature",
+      "configuration_id": "config_01",
+      "reused_fit": false
+    },
+    {
+      "feature": "ste",
+      "num_bins": 40,
+      "smooth_window": 3,
+      "weight": 2.0,
+      "m1": 19.98308750753058,
+      "m2": 25.140013186621943,
+      "threshold": 21.702062733894365,
+      "training_mae_ms": 67.49433106575964,
+      "training_rmse_ms": 67.49433106575964,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 6,
+      "matched_count": 1,
+      "unmatched_gt_count": 7,
+      "unmatched_predicted_count": 5,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 4,
+          "gt_count": 2,
+          "matched_count": 0,
+          "matched_pairs_sec": [],
+          "signed_errors_ms": [],
+          "absolute_errors_ms": [],
+          "mae_ms": null,
+          "rmse_ms": null,
+          "unmatched_predicted_boundaries": [
+            0.6375,
+            1.0375,
+            1.4674999999999998,
+            1.5675
+          ],
+          "unmatched_gt_boundaries": [
+            0.53,
+            2.75
+          ],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 0,
+          "gt_count": 2,
+          "matched_count": 0,
+          "matched_pairs_sec": [],
+          "signed_errors_ms": [],
+          "absolute_errors_ms": [],
+          "mae_ms": null,
+          "rmse_ms": null,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [
+            0.46,
+            3.52
+          ],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 0,
+          "gt_count": 2,
+          "matched_count": 0,
+          "matched_pairs_sec": [],
+          "signed_errors_ms": [],
+          "absolute_errors_ms": [],
+          "mae_ms": null,
+          "rmse_ms": null,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [
+            0.68,
+            2.15
+          ],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 1,
+          "matched_pairs_sec": [
+            [
+              0.9374943310657596,
+              0.87
+            ]
+          ],
+          "signed_errors_ms": [
+            67.49433106575964
+          ],
+          "absolute_errors_ms": [
+            67.49433106575964
+          ],
+          "mae_ms": 67.49433106575964,
+          "rmse_ms": 67.49433106575964,
+          "unmatched_predicted_boundaries": [
+            0.9674943310657597
+          ],
+          "unmatched_gt_boundaries": [
+            2.06
+          ],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 6,
+      "stage": "feature",
+      "configuration_id": "config_02",
+      "reused_fit": false
+    },
+    {
+      "feature": "ma",
+      "num_bins": 40,
+      "smooth_window": 3,
+      "weight": 2.0,
+      "m1": 31.341970062255857,
+      "m2": 51.127916717529295,
+      "threshold": 37.93728561401367,
+      "training_mae_ms": 31.498866213151878,
+      "training_rmse_ms": 35.30122268614732,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 14,
+      "matched_count": 5,
+      "unmatched_gt_count": 3,
+      "unmatched_predicted_count": 9,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 6,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.5575,
+              0.53
+            ],
+            [
+              2.7175000000000002,
+              2.75
+            ]
+          ],
+          "signed_errors_ms": [
+            27.499999999999968,
+            -32.49999999999975
+          ],
+          "absolute_errors_ms": [
+            27.499999999999968,
+            32.49999999999975
+          ],
+          "mae_ms": 29.999999999999858,
+          "rmse_ms": 30.103986446980592,
+          "unmatched_predicted_boundaries": [
+            1.5875,
+            1.9275000000000002,
+            2.4275,
+            2.6675
+          ],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 4,
+          "gt_count": 2,
+          "matched_count": 0,
+          "matched_pairs_sec": [],
+          "signed_errors_ms": [],
+          "absolute_errors_ms": [],
+          "mae_ms": null,
+          "rmse_ms": null,
+          "unmatched_predicted_boundaries": [
+            0.6375,
+            0.6475,
+            1.8375,
+            1.8575
+          ],
+          "unmatched_gt_boundaries": [
+            0.46,
+            3.52
+          ],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.6874943310657596,
+              0.68
+            ],
+            [
+              2.1174943310657595,
+              2.15
+            ]
+          ],
+          "signed_errors_ms": [
+            7.494331065759585,
+            -32.50566893424045
+          ],
+          "absolute_errors_ms": [
+            7.494331065759585,
+            32.50566893424045
+          ],
+          "mae_ms": 20.000000000000014,
+          "rmse_ms": 23.587957849140455,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 1,
+          "matched_pairs_sec": [
+            [
+              0.9274943310657596,
+              0.87
+            ]
+          ],
+          "signed_errors_ms": [
+            57.49433106575963
+          ],
+          "absolute_errors_ms": [
+            57.49433106575963
+          ],
+          "mae_ms": 57.49433106575963,
+          "rmse_ms": 57.49433106575963,
+          "unmatched_predicted_boundaries": [
+            1.9574943310657598
+          ],
+          "unmatched_gt_boundaries": [
+            2.06
+          ],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 5,
+      "stage": "feature",
+      "configuration_id": "config_03",
+      "reused_fit": false
+    },
+    {
+      "feature": "logma",
+      "num_bins": 40,
+      "smooth_window": 3,
+      "weight": 2.0,
+      "m1": -0.027981997756891808,
+      "m2": 1.1139207256069792,
+      "threshold": 0.35265224336439854,
+      "training_mae_ms": 23.333333333333382,
+      "training_rmse_ms": 32.75425319407145,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 8,
+      "matched_count": 6,
+      "unmatched_gt_count": 2,
+      "unmatched_predicted_count": 2,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 0,
+          "gt_count": 2,
+          "matched_count": 0,
+          "matched_pairs_sec": [],
+          "signed_errors_ms": [],
+          "absolute_errors_ms": [],
+          "mae_ms": null,
+          "rmse_ms": null,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [
+            0.53,
+            2.75
+          ],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.4575,
+              0.46
+            ],
+            [
+              3.5875,
+              3.52
+            ]
+          ],
+          "signed_errors_ms": [
+            -2.500000000000002,
+            67.49999999999989
+          ],
+          "absolute_errors_ms": [
+            2.500000000000002,
+            67.49999999999989
+          ],
+          "mae_ms": 34.99999999999994,
+          "rmse_ms": 47.76243293635692,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 4,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.6674943310657596,
+              0.68
+            ],
+            [
+              2.1674943310657597,
+              2.15
+            ]
+          ],
+          "signed_errors_ms": [
+            -12.505668934240433,
+            17.494331065759816
+          ],
+          "absolute_errors_ms": [
+            12.505668934240433,
+            17.494331065759816
+          ],
+          "mae_ms": 15.000000000000124,
+          "rmse_ms": 15.205975386854261,
+          "unmatched_predicted_boundaries": [
+            2.5674943310657596,
+            2.59749433106576
+          ],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.8674943310657597,
+              0.87
+            ],
+            [
+              2.09749433106576,
+              2.06
+            ]
+          ],
+          "signed_errors_ms": [
+            -2.5056689342403127,
+            37.49433106575984
+          ],
+          "absolute_errors_ms": [
+            2.5056689342403127,
+            37.49433106575984
+          ],
+          "mae_ms": 20.000000000000075,
+          "rmse_ms": 26.571631855014285,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 5,
+      "stage": "feature",
+      "configuration_id": "config_04",
+      "reused_fit": false
+    },
+    {
+      "feature": "logste",
+      "num_bins": 40,
+      "smooth_window": 3,
+      "weight": 2.0,
+      "m1": -3.206248013637042,
+      "m2": 1.8673591422481692,
+      "threshold": -1.5150456283419718,
+      "training_mae_ms": 14.376417233560119,
+      "training_rmse_ms": 20.309398597624885,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 10,
+      "matched_count": 8,
+      "unmatched_gt_count": 0,
+      "unmatched_predicted_count": 2,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.5375,
+              0.53
+            ],
+            [
+              2.7375,
+              2.75
+            ]
+          ],
+          "signed_errors_ms": [
+            7.499999999999951,
+            -12.500000000000178
+          ],
+          "absolute_errors_ms": [
+            7.499999999999951,
+            12.500000000000178
+          ],
+          "mae_ms": 10.000000000000064,
+          "rmse_ms": 10.30776406404424,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 4,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.4775,
+              0.46
+            ],
+            [
+              3.5175,
+              3.52
+            ]
+          ],
+          "signed_errors_ms": [
+            17.49999999999996,
+            -2.4999999999999467
+          ],
+          "absolute_errors_ms": [
+            17.49999999999996,
+            2.4999999999999467
+          ],
+          "mae_ms": 9.999999999999954,
+          "rmse_ms": 12.499999999999966,
+          "unmatched_predicted_boundaries": [
+            2.9375,
+            3.1775
+          ],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.6774943310657596,
+              0.68
+            ],
+            [
+              2.1474943310657597,
+              2.15
+            ]
+          ],
+          "signed_errors_ms": [
+            -2.5056689342404237,
+            -2.5056689342402017
+          ],
+          "absolute_errors_ms": [
+            2.5056689342404237,
+            2.5056689342402017
+          ],
+          "mae_ms": 2.5056689342403127,
+          "rmse_ms": 2.5056689342403127,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.9174943310657596,
+              0.87
+            ],
+            [
+              2.0374943310657594,
+              2.06
+            ]
+          ],
+          "signed_errors_ms": [
+            47.494331065759624,
+            -22.505668934240664
+          ],
+          "absolute_errors_ms": [
+            47.494331065759624,
+            22.505668934240664
+          ],
+          "mae_ms": 35.00000000000014,
+          "rmse_ms": 37.16326558284151,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 5,
+      "stage": "num_bins",
+      "configuration_id": "config_01",
+      "reused_fit": true
+    },
+    {
+      "feature": "logste",
+      "num_bins": 20,
+      "smooth_window": 3,
+      "weight": 2.0,
+      "m1": -2.9756295065513516,
+      "m2": 0.7142666068197112,
+      "threshold": -1.745664135427664,
+      "training_mae_ms": 14.376417233560119,
+      "training_rmse_ms": 20.309398597624885,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 10,
+      "matched_count": 8,
+      "unmatched_gt_count": 0,
+      "unmatched_predicted_count": 2,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.5375,
+              0.53
+            ],
+            [
+              2.7375,
+              2.75
+            ]
+          ],
+          "signed_errors_ms": [
+            7.499999999999951,
+            -12.500000000000178
+          ],
+          "absolute_errors_ms": [
+            7.499999999999951,
+            12.500000000000178
+          ],
+          "mae_ms": 10.000000000000064,
+          "rmse_ms": 10.30776406404424,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 4,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.4775,
+              0.46
+            ],
+            [
+              3.5175,
+              3.52
+            ]
+          ],
+          "signed_errors_ms": [
+            17.49999999999996,
+            -2.4999999999999467
+          ],
+          "absolute_errors_ms": [
+            17.49999999999996,
+            2.4999999999999467
+          ],
+          "mae_ms": 9.999999999999954,
+          "rmse_ms": 12.499999999999966,
+          "unmatched_predicted_boundaries": [
+            2.9375,
+            3.1375
+          ],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.6774943310657596,
+              0.68
+            ],
+            [
+              2.1474943310657597,
+              2.15
+            ]
+          ],
+          "signed_errors_ms": [
+            -2.5056689342404237,
+            -2.5056689342402017
+          ],
+          "absolute_errors_ms": [
+            2.5056689342404237,
+            2.5056689342402017
+          ],
+          "mae_ms": 2.5056689342403127,
+          "rmse_ms": 2.5056689342403127,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.9174943310657596,
+              0.87
+            ],
+            [
+              2.0374943310657594,
+              2.06
+            ]
+          ],
+          "signed_errors_ms": [
+            47.494331065759624,
+            -22.505668934240664
+          ],
+          "absolute_errors_ms": [
+            47.494331065759624,
+            22.505668934240664
+          ],
+          "mae_ms": 35.00000000000014,
+          "rmse_ms": 37.16326558284151,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 3,
+      "stage": "num_bins",
+      "configuration_id": "config_05",
+      "reused_fit": false
+    },
+    {
+      "feature": "logste",
+      "num_bins": 30,
+      "smooth_window": 3,
+      "weight": 2.0,
+      "m1": -3.129375177941812,
+      "m2": 1.790486306552939,
+      "threshold": -1.4894213497768949,
+      "training_mae_ms": 14.376417233560119,
+      "training_rmse_ms": 20.309398597624885,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 10,
+      "matched_count": 8,
+      "unmatched_gt_count": 0,
+      "unmatched_predicted_count": 2,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.5375,
+              0.53
+            ],
+            [
+              2.7375,
+              2.75
+            ]
+          ],
+          "signed_errors_ms": [
+            7.499999999999951,
+            -12.500000000000178
+          ],
+          "absolute_errors_ms": [
+            7.499999999999951,
+            12.500000000000178
+          ],
+          "mae_ms": 10.000000000000064,
+          "rmse_ms": 10.30776406404424,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 4,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.4775,
+              0.46
+            ],
+            [
+              3.5175,
+              3.52
+            ]
+          ],
+          "signed_errors_ms": [
+            17.49999999999996,
+            -2.4999999999999467
+          ],
+          "absolute_errors_ms": [
+            17.49999999999996,
+            2.4999999999999467
+          ],
+          "mae_ms": 9.999999999999954,
+          "rmse_ms": 12.499999999999966,
+          "unmatched_predicted_boundaries": [
+            2.9375,
+            3.1775
+          ],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.6774943310657596,
+              0.68
+            ],
+            [
+              2.1474943310657597,
+              2.15
+            ]
+          ],
+          "signed_errors_ms": [
+            -2.5056689342404237,
+            -2.5056689342402017
+          ],
+          "absolute_errors_ms": [
+            2.5056689342404237,
+            2.5056689342402017
+          ],
+          "mae_ms": 2.5056689342403127,
+          "rmse_ms": 2.5056689342403127,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.9174943310657596,
+              0.87
+            ],
+            [
+              2.0374943310657594,
+              2.06
+            ]
+          ],
+          "signed_errors_ms": [
+            47.494331065759624,
+            -22.505668934240664
+          ],
+          "absolute_errors_ms": [
+            47.494331065759624,
+            22.505668934240664
+          ],
+          "mae_ms": 35.00000000000014,
+          "rmse_ms": 37.16326558284151,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 4,
+      "stage": "num_bins",
+      "configuration_id": "config_06",
+      "reused_fit": false
+    },
+    {
+      "feature": "logste",
+      "num_bins": 50,
+      "smooth_window": 3,
+      "weight": 2.0,
+      "m1": -3.2523717150541795,
+      "m2": 1.5444932323282003,
+      "threshold": -1.6534167325933862,
+      "training_mae_ms": 14.376417233560119,
+      "training_rmse_ms": 20.309398597624885,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 10,
+      "matched_count": 8,
+      "unmatched_gt_count": 0,
+      "unmatched_predicted_count": 2,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.5375,
+              0.53
+            ],
+            [
+              2.7375,
+              2.75
+            ]
+          ],
+          "signed_errors_ms": [
+            7.499999999999951,
+            -12.500000000000178
+          ],
+          "absolute_errors_ms": [
+            7.499999999999951,
+            12.500000000000178
+          ],
+          "mae_ms": 10.000000000000064,
+          "rmse_ms": 10.30776406404424,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 4,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.4775,
+              0.46
+            ],
+            [
+              3.5175,
+              3.52
+            ]
+          ],
+          "signed_errors_ms": [
+            17.49999999999996,
+            -2.4999999999999467
+          ],
+          "absolute_errors_ms": [
+            17.49999999999996,
+            2.4999999999999467
+          ],
+          "mae_ms": 9.999999999999954,
+          "rmse_ms": 12.499999999999966,
+          "unmatched_predicted_boundaries": [
+            2.9375,
+            3.1574999999999998
+          ],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.6774943310657596,
+              0.68
+            ],
+            [
+              2.1474943310657597,
+              2.15
+            ]
+          ],
+          "signed_errors_ms": [
+            -2.5056689342404237,
+            -2.5056689342402017
+          ],
+          "absolute_errors_ms": [
+            2.5056689342404237,
+            2.5056689342402017
+          ],
+          "mae_ms": 2.5056689342403127,
+          "rmse_ms": 2.5056689342403127,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.9174943310657596,
+              0.87
+            ],
+            [
+              2.0374943310657594,
+              2.06
+            ]
+          ],
+          "signed_errors_ms": [
+            47.494331065759624,
+            -22.505668934240664
+          ],
+          "absolute_errors_ms": [
+            47.494331065759624,
+            22.505668934240664
+          ],
+          "mae_ms": 35.00000000000014,
+          "rmse_ms": 37.16326558284151,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 6,
+      "stage": "num_bins",
+      "configuration_id": "config_07",
+      "reused_fit": false
+    },
+    {
+      "feature": "logste",
+      "num_bins": 60,
+      "smooth_window": 3,
+      "weight": 2.0,
+      "m1": -3.590612192113195,
+      "m2": 1.9442319779433994,
+      "threshold": -1.7456641354276634,
+      "training_mae_ms": 14.376417233560119,
+      "training_rmse_ms": 20.309398597624885,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 10,
+      "matched_count": 8,
+      "unmatched_gt_count": 0,
+      "unmatched_predicted_count": 2,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.5375,
+              0.53
+            ],
+            [
+              2.7375,
+              2.75
+            ]
+          ],
+          "signed_errors_ms": [
+            7.499999999999951,
+            -12.500000000000178
+          ],
+          "absolute_errors_ms": [
+            7.499999999999951,
+            12.500000000000178
+          ],
+          "mae_ms": 10.000000000000064,
+          "rmse_ms": 10.30776406404424,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 4,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.4775,
+              0.46
+            ],
+            [
+              3.5175,
+              3.52
+            ]
+          ],
+          "signed_errors_ms": [
+            17.49999999999996,
+            -2.4999999999999467
+          ],
+          "absolute_errors_ms": [
+            17.49999999999996,
+            2.4999999999999467
+          ],
+          "mae_ms": 9.999999999999954,
+          "rmse_ms": 12.499999999999966,
+          "unmatched_predicted_boundaries": [
+            2.9375,
+            3.1375
+          ],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.6774943310657596,
+              0.68
+            ],
+            [
+              2.1474943310657597,
+              2.15
+            ]
+          ],
+          "signed_errors_ms": [
+            -2.5056689342404237,
+            -2.5056689342402017
+          ],
+          "absolute_errors_ms": [
+            2.5056689342404237,
+            2.5056689342402017
+          ],
+          "mae_ms": 2.5056689342403127,
+          "rmse_ms": 2.5056689342403127,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.9174943310657596,
+              0.87
+            ],
+            [
+              2.0374943310657594,
+              2.06
+            ]
+          ],
+          "signed_errors_ms": [
+            47.494331065759624,
+            -22.505668934240664
+          ],
+          "absolute_errors_ms": [
+            47.494331065759624,
+            22.505668934240664
+          ],
+          "mae_ms": 35.00000000000014,
+          "rmse_ms": 37.16326558284151,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 7,
+      "stage": "num_bins",
+      "configuration_id": "config_08",
+      "reused_fit": false
+    },
+    {
+      "feature": "logste",
+      "num_bins": 40,
+      "smooth_window": 3,
+      "weight": 2.0,
+      "m1": -3.206248013637042,
+      "m2": 1.8673591422481692,
+      "threshold": -1.5150456283419718,
+      "training_mae_ms": 14.376417233560119,
+      "training_rmse_ms": 20.309398597624885,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 10,
+      "matched_count": 8,
+      "unmatched_gt_count": 0,
+      "unmatched_predicted_count": 2,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.5375,
+              0.53
+            ],
+            [
+              2.7375,
+              2.75
+            ]
+          ],
+          "signed_errors_ms": [
+            7.499999999999951,
+            -12.500000000000178
+          ],
+          "absolute_errors_ms": [
+            7.499999999999951,
+            12.500000000000178
+          ],
+          "mae_ms": 10.000000000000064,
+          "rmse_ms": 10.30776406404424,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 4,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.4775,
+              0.46
+            ],
+            [
+              3.5175,
+              3.52
+            ]
+          ],
+          "signed_errors_ms": [
+            17.49999999999996,
+            -2.4999999999999467
+          ],
+          "absolute_errors_ms": [
+            17.49999999999996,
+            2.4999999999999467
+          ],
+          "mae_ms": 9.999999999999954,
+          "rmse_ms": 12.499999999999966,
+          "unmatched_predicted_boundaries": [
+            2.9375,
+            3.1775
+          ],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.6774943310657596,
+              0.68
+            ],
+            [
+              2.1474943310657597,
+              2.15
+            ]
+          ],
+          "signed_errors_ms": [
+            -2.5056689342404237,
+            -2.5056689342402017
+          ],
+          "absolute_errors_ms": [
+            2.5056689342404237,
+            2.5056689342402017
+          ],
+          "mae_ms": 2.5056689342403127,
+          "rmse_ms": 2.5056689342403127,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.9174943310657596,
+              0.87
+            ],
+            [
+              2.0374943310657594,
+              2.06
+            ]
+          ],
+          "signed_errors_ms": [
+            47.494331065759624,
+            -22.505668934240664
+          ],
+          "absolute_errors_ms": [
+            47.494331065759624,
+            22.505668934240664
+          ],
+          "mae_ms": 35.00000000000014,
+          "rmse_ms": 37.16326558284151,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 5,
+      "stage": "smooth_window",
+      "configuration_id": "config_01",
+      "reused_fit": true
+    },
+    {
+      "feature": "logste",
+      "num_bins": 40,
+      "smooth_window": 1,
+      "weight": 2.0,
+      "m1": -3.667485027808425,
+      "m2": 0.022411085562637822,
+      "threshold": -2.4375196566847372,
+      "training_mae_ms": 10.626417233560066,
+      "training_rmse_ms": 17.85238076732638,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 10,
+      "matched_count": 8,
+      "unmatched_gt_count": 0,
+      "unmatched_predicted_count": 2,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 4,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.5375,
+              0.53
+            ],
+            [
+              2.7475,
+              2.75
+            ]
+          ],
+          "signed_errors_ms": [
+            7.499999999999951,
+            -2.4999999999999467
+          ],
+          "absolute_errors_ms": [
+            7.499999999999951,
+            2.4999999999999467
+          ],
+          "mae_ms": 4.9999999999999485,
+          "rmse_ms": 5.590169943749429,
+          "unmatched_predicted_boundaries": [
+            3.1574999999999998,
+            3.1875
+          ],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.4675,
+              0.46
+            ],
+            [
+              3.5175,
+              3.52
+            ]
+          ],
+          "signed_errors_ms": [
+            7.500000000000007,
+            -2.4999999999999467
+          ],
+          "absolute_errors_ms": [
+            7.500000000000007,
+            2.4999999999999467
+          ],
+          "mae_ms": 4.999999999999977,
+          "rmse_ms": 5.590169943749467,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.6774943310657596,
+              0.68
+            ],
+            [
+              2.1474943310657597,
+              2.15
+            ]
+          ],
+          "signed_errors_ms": [
+            -2.5056689342404237,
+            -2.5056689342402017
+          ],
+          "absolute_errors_ms": [
+            2.5056689342404237,
+            2.5056689342402017
+          ],
+          "mae_ms": 2.5056689342403127,
+          "rmse_ms": 2.5056689342403127,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.9174943310657596,
+              0.87
+            ],
+            [
+              2.0474943310657596,
+              2.06
+            ]
+          ],
+          "signed_errors_ms": [
+            47.494331065759624,
+            -12.505668934240433
+          ],
+          "absolute_errors_ms": [
+            47.494331065759624,
+            12.505668934240433
+          ],
+          "mae_ms": 30.00000000000003,
+          "rmse_ms": 34.7282539071345,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 9,
+      "stage": "smooth_window",
+      "configuration_id": "config_09",
+      "reused_fit": false
+    },
+    {
+      "feature": "logste",
+      "num_bins": 40,
+      "smooth_window": 5,
+      "weight": 2.0,
+      "m1": -3.206248013637042,
+      "m2": 1.4061221280767846,
+      "threshold": -1.6687912997324332,
+      "training_mae_ms": 14.376417233560119,
+      "training_rmse_ms": 20.309398597624885,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 10,
+      "matched_count": 8,
+      "unmatched_gt_count": 0,
+      "unmatched_predicted_count": 2,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.5375,
+              0.53
+            ],
+            [
+              2.7375,
+              2.75
+            ]
+          ],
+          "signed_errors_ms": [
+            7.499999999999951,
+            -12.500000000000178
+          ],
+          "absolute_errors_ms": [
+            7.499999999999951,
+            12.500000000000178
+          ],
+          "mae_ms": 10.000000000000064,
+          "rmse_ms": 10.30776406404424,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 4,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.4775,
+              0.46
+            ],
+            [
+              3.5175,
+              3.52
+            ]
+          ],
+          "signed_errors_ms": [
+            17.49999999999996,
+            -2.4999999999999467
+          ],
+          "absolute_errors_ms": [
+            17.49999999999996,
+            2.4999999999999467
+          ],
+          "mae_ms": 9.999999999999954,
+          "rmse_ms": 12.499999999999966,
+          "unmatched_predicted_boundaries": [
+            2.9375,
+            3.1574999999999998
+          ],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.6774943310657596,
+              0.68
+            ],
+            [
+              2.1474943310657597,
+              2.15
+            ]
+          ],
+          "signed_errors_ms": [
+            -2.5056689342404237,
+            -2.5056689342402017
+          ],
+          "absolute_errors_ms": [
+            2.5056689342404237,
+            2.5056689342402017
+          ],
+          "mae_ms": 2.5056689342403127,
+          "rmse_ms": 2.5056689342403127,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.9174943310657596,
+              0.87
+            ],
+            [
+              2.0374943310657594,
+              2.06
+            ]
+          ],
+          "signed_errors_ms": [
+            47.494331065759624,
+            -22.505668934240664
+          ],
+          "absolute_errors_ms": [
+            47.494331065759624,
+            22.505668934240664
+          ],
+          "mae_ms": 35.00000000000014,
+          "rmse_ms": 37.16326558284151,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 7,
+      "stage": "smooth_window",
+      "configuration_id": "config_10",
+      "reused_fit": false
+    },
+    {
+      "feature": "logste",
+      "num_bins": 40,
+      "smooth_window": 7,
+      "weight": 2.0,
+      "m1": -2.2837739852942764,
+      "m2": 0.9448851139054018,
+      "threshold": -1.2075542855610504,
+      "training_mae_ms": 16.876417233560066,
+      "training_rmse_ms": 21.21286976655461,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 14,
+      "matched_count": 8,
+      "unmatched_gt_count": 0,
+      "unmatched_predicted_count": 6,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.5375,
+              0.53
+            ],
+            [
+              2.7375,
+              2.75
+            ]
+          ],
+          "signed_errors_ms": [
+            7.499999999999951,
+            -12.500000000000178
+          ],
+          "absolute_errors_ms": [
+            7.499999999999951,
+            12.500000000000178
+          ],
+          "mae_ms": 10.000000000000064,
+          "rmse_ms": 10.30776406404424,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 8,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.4775,
+              0.46
+            ],
+            [
+              3.5075000000000003,
+              3.52
+            ]
+          ],
+          "signed_errors_ms": [
+            17.49999999999996,
+            -12.499999999999734
+          ],
+          "absolute_errors_ms": [
+            17.49999999999996,
+            12.499999999999734
+          ],
+          "mae_ms": 14.999999999999847,
+          "rmse_ms": 15.206906325745416,
+          "unmatched_predicted_boundaries": [
+            1.2974999999999999,
+            1.4975,
+            1.5975000000000001,
+            1.7974999999999999,
+            2.9375,
+            3.1775
+          ],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.6774943310657596,
+              0.68
+            ],
+            [
+              2.13749433106576,
+              2.15
+            ]
+          ],
+          "signed_errors_ms": [
+            -2.5056689342404237,
+            -12.505668934239988
+          ],
+          "absolute_errors_ms": [
+            2.5056689342404237,
+            12.505668934239988
+          ],
+          "mae_ms": 7.505668934240206,
+          "rmse_ms": 9.01859557527758,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.9174943310657596,
+              0.87
+            ],
+            [
+              2.0374943310657594,
+              2.06
+            ]
+          ],
+          "signed_errors_ms": [
+            47.494331065759624,
+            -22.505668934240664
+          ],
+          "absolute_errors_ms": [
+            47.494331065759624,
+            22.505668934240664
+          ],
+          "mae_ms": 35.00000000000014,
+          "rmse_ms": 37.16326558284151,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 7,
+      "stage": "smooth_window",
+      "configuration_id": "config_11",
+      "reused_fit": false
+    },
+    {
+      "feature": "logste",
+      "num_bins": 40,
+      "smooth_window": 1,
+      "weight": 2.0,
+      "m1": -3.667485027808425,
+      "m2": 0.022411085562637822,
+      "threshold": -2.4375196566847372,
+      "training_mae_ms": 10.626417233560066,
+      "training_rmse_ms": 17.85238076732638,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 10,
+      "matched_count": 8,
+      "unmatched_gt_count": 0,
+      "unmatched_predicted_count": 2,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 4,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.5375,
+              0.53
+            ],
+            [
+              2.7475,
+              2.75
+            ]
+          ],
+          "signed_errors_ms": [
+            7.499999999999951,
+            -2.4999999999999467
+          ],
+          "absolute_errors_ms": [
+            7.499999999999951,
+            2.4999999999999467
+          ],
+          "mae_ms": 4.9999999999999485,
+          "rmse_ms": 5.590169943749429,
+          "unmatched_predicted_boundaries": [
+            3.1574999999999998,
+            3.1875
+          ],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.4675,
+              0.46
+            ],
+            [
+              3.5175,
+              3.52
+            ]
+          ],
+          "signed_errors_ms": [
+            7.500000000000007,
+            -2.4999999999999467
+          ],
+          "absolute_errors_ms": [
+            7.500000000000007,
+            2.4999999999999467
+          ],
+          "mae_ms": 4.999999999999977,
+          "rmse_ms": 5.590169943749467,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.6774943310657596,
+              0.68
+            ],
+            [
+              2.1474943310657597,
+              2.15
+            ]
+          ],
+          "signed_errors_ms": [
+            -2.5056689342404237,
+            -2.5056689342402017
+          ],
+          "absolute_errors_ms": [
+            2.5056689342404237,
+            2.5056689342402017
+          ],
+          "mae_ms": 2.5056689342403127,
+          "rmse_ms": 2.5056689342403127,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.9174943310657596,
+              0.87
+            ],
+            [
+              2.0474943310657596,
+              2.06
+            ]
+          ],
+          "signed_errors_ms": [
+            47.494331065759624,
+            -12.505668934240433
+          ],
+          "absolute_errors_ms": [
+            47.494331065759624,
+            12.505668934240433
+          ],
+          "mae_ms": 30.00000000000003,
+          "rmse_ms": 34.7282539071345,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 9,
+      "stage": "weight",
+      "configuration_id": "config_09",
+      "reused_fit": true
+    },
+    {
+      "feature": "logste",
+      "num_bins": 40,
+      "smooth_window": 1,
+      "weight": 1.0,
+      "m1": -3.667485027808425,
+      "m2": 0.022411085562637822,
+      "threshold": -1.8225369711228936,
+      "training_mae_ms": 13.12641723356009,
+      "training_rmse_ms": 19.20175770760597,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 10,
+      "matched_count": 8,
+      "unmatched_gt_count": 0,
+      "unmatched_predicted_count": 2,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.5375,
+              0.53
+            ],
+            [
+              2.7375,
+              2.75
+            ]
+          ],
+          "signed_errors_ms": [
+            7.499999999999951,
+            -12.500000000000178
+          ],
+          "absolute_errors_ms": [
+            7.499999999999951,
+            12.500000000000178
+          ],
+          "mae_ms": 10.000000000000064,
+          "rmse_ms": 10.30776406404424,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 4,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.4775,
+              0.46
+            ],
+            [
+              3.5175,
+              3.52
+            ]
+          ],
+          "signed_errors_ms": [
+            17.49999999999996,
+            -2.4999999999999467
+          ],
+          "absolute_errors_ms": [
+            17.49999999999996,
+            2.4999999999999467
+          ],
+          "mae_ms": 9.999999999999954,
+          "rmse_ms": 12.499999999999966,
+          "unmatched_predicted_boundaries": [
+            2.9375,
+            3.1375
+          ],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.6774943310657596,
+              0.68
+            ],
+            [
+              2.1474943310657597,
+              2.15
+            ]
+          ],
+          "signed_errors_ms": [
+            -2.5056689342404237,
+            -2.5056689342402017
+          ],
+          "absolute_errors_ms": [
+            2.5056689342404237,
+            2.5056689342402017
+          ],
+          "mae_ms": 2.5056689342403127,
+          "rmse_ms": 2.5056689342403127,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.9174943310657596,
+              0.87
+            ],
+            [
+              2.0474943310657596,
+              2.06
+            ]
+          ],
+          "signed_errors_ms": [
+            47.494331065759624,
+            -12.505668934240433
+          ],
+          "absolute_errors_ms": [
+            47.494331065759624,
+            12.505668934240433
+          ],
+          "mae_ms": 30.00000000000003,
+          "rmse_ms": 34.7282539071345,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 9,
+      "stage": "weight",
+      "configuration_id": "config_12",
+      "reused_fit": false
+    },
+    {
+      "feature": "logste",
+      "num_bins": 40,
+      "smooth_window": 1,
+      "weight": 3.0,
+      "m1": -3.667485027808425,
+      "m2": 0.022411085562637822,
+      "threshold": -2.7450109994656593,
+      "training_mae_ms": 12.499999999999966,
+      "training_rmse_ms": 19.24762179672384,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 9,
+      "matched_count": 7,
+      "unmatched_gt_count": 1,
+      "unmatched_predicted_count": 2,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 3,
+          "gt_count": 2,
+          "matched_count": 1,
+          "matched_pairs_sec": [
+            [
+              0.5375,
+              0.53
+            ]
+          ],
+          "signed_errors_ms": [
+            7.499999999999951
+          ],
+          "absolute_errors_ms": [
+            7.499999999999951
+          ],
+          "mae_ms": 7.499999999999951,
+          "rmse_ms": 7.499999999999951,
+          "unmatched_predicted_boundaries": [
+            2.8575,
+            3.1475
+          ],
+          "unmatched_gt_boundaries": [
+            2.75
+          ],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.4675,
+              0.46
+            ],
+            [
+              3.5175,
+              3.52
+            ]
+          ],
+          "signed_errors_ms": [
+            7.500000000000007,
+            -2.4999999999999467
+          ],
+          "absolute_errors_ms": [
+            7.500000000000007,
+            2.4999999999999467
+          ],
+          "mae_ms": 4.999999999999977,
+          "rmse_ms": 5.590169943749467,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.6674943310657596,
+              0.68
+            ],
+            [
+              2.1574943310657595,
+              2.15
+            ]
+          ],
+          "signed_errors_ms": [
+            -12.505668934240433,
+            7.494331065759585
+          ],
+          "absolute_errors_ms": [
+            12.505668934240433,
+            7.494331065759585
+          ],
+          "mae_ms": 10.000000000000009,
+          "rmse_ms": 10.309140449524282,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.9174943310657596,
+              0.87
+            ],
+            [
+              2.05749433106576,
+              2.06
+            ]
+          ],
+          "signed_errors_ms": [
+            47.494331065759624,
+            -2.5056689342402017
+          ],
+          "absolute_errors_ms": [
+            47.494331065759624,
+            2.5056689342402017
+          ],
+          "mae_ms": 24.999999999999915,
+          "rmse_ms": 33.63026806458726,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 9,
+      "stage": "weight",
+      "configuration_id": "config_13",
+      "reused_fit": false
+    },
+    {
+      "feature": "logste",
+      "num_bins": 40,
+      "smooth_window": 1,
+      "weight": 5.0,
+      "m1": -3.667485027808425,
+      "m2": 0.022411085562637822,
+      "threshold": -3.0525023422465813,
+      "training_mae_ms": 8.928571428571374,
+      "training_rmse_ms": 9.954444447886798,
+      "status": "ok",
+      "failure_status": null,
+      "gt_count": 8,
+      "predicted_count": 7,
+      "matched_count": 7,
+      "unmatched_gt_count": 1,
+      "unmatched_predicted_count": 0,
+      "uncovered_frames": 0,
+      "files": [
+        {
+          "wav": "phone_F1.wav",
+          "predicted_count": 1,
+          "gt_count": 2,
+          "matched_count": 1,
+          "matched_pairs_sec": [
+            [
+              0.5375,
+              0.53
+            ]
+          ],
+          "signed_errors_ms": [
+            7.499999999999951
+          ],
+          "absolute_errors_ms": [
+            7.499999999999951
+          ],
+          "mae_ms": 7.499999999999951,
+          "rmse_ms": 7.499999999999951,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [
+            2.75
+          ],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "phone_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.4675,
+              0.46
+            ],
+            [
+              3.5275,
+              3.52
+            ]
+          ],
+          "signed_errors_ms": [
+            7.500000000000007,
+            7.49999999999984
+          ],
+          "absolute_errors_ms": [
+            7.500000000000007,
+            7.49999999999984
+          ],
+          "mae_ms": 7.499999999999924,
+          "rmse_ms": 7.499999999999923,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 10.000 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_F1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.6674943310657596,
+              0.68
+            ],
+            [
+              2.1574943310657595,
+              2.15
+            ]
+          ],
+          "signed_errors_ms": [
+            -12.505668934240433,
+            7.494331065759585
+          ],
+          "absolute_errors_ms": [
+            12.505668934240433,
+            7.494331065759585
+          ],
+          "mae_ms": 10.000000000000009,
+          "rmse_ms": 10.309140449524282,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 3.197 ms; labels are not extended."
+          ]
+        },
+        {
+          "wav": "studio_M1.wav",
+          "predicted_count": 2,
+          "gt_count": 2,
+          "matched_count": 2,
+          "matched_pairs_sec": [
+            [
+              0.8874943310657596,
+              0.87
+            ],
+            [
+              2.05749433106576,
+              2.06
+            ]
+          ],
+          "signed_errors_ms": [
+            17.494331065759596,
+            -2.5056689342402017
+          ],
+          "absolute_errors_ms": [
+            17.494331065759596,
+            2.5056689342402017
+          ],
+          "mae_ms": 9.999999999999899,
+          "rmse_ms": 12.49659946238211,
+          "unmatched_predicted_boundaries": [],
+          "unmatched_gt_boundaries": [],
+          "tolerance_ms": 100.0,
+          "alignment_warnings": [
+            "WAV end minus LAB end: 0.159 ms; labels are not extended."
+          ]
+        }
+      ],
+      "detected_peak_count": 9,
+      "stage": "weight",
+      "configuration_id": "config_14",
+      "reused_fit": false
+    }
+  ],
+  "selected_configuration_id": "config_09",
+  "selected_configuration": {
+    "feature": "logste",
+    "num_bins": 40,
+    "smooth_window": 1,
+    "weight": 2.0
+  }
+}

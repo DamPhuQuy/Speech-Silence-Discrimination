@@ -1,78 +1,45 @@
-import sys
+"""One-command demonstration of frozen Histogram Speech/Silence segmentation."""
+import argparse
 from pathlib import Path
 
-ROOT_DIR = Path(__file__).resolve().parent
-if str(ROOT_DIR) not in sys.path:
-    sys.path.insert(0, str(ROOT_DIR))
-
-from src.audio.dataset import load_dataset
-from src.evaluate.metrics import evaluate_signal, summarize_metrics
-from src.pipeline import run_pipeline
-from src.segmentation.segment import segment_signal
-import json
+from src.config import load_frozen_histogram
+from src.pipeline import evaluate_frozen_histogram
+from src.evaluate.plot import plot_test_report
+from src.evaluate.reporting import format_training_information, format_final_table, save_test_report
 
 
-def main() -> None:
-    output_dir = ROOT_DIR / "reports" / "figures"
-    output_dir.mkdir(parents=True, exist_ok=True)
+def main(*, show: bool = True, project_root: Path | None = None) -> list[Path]:
+    """Load/print the training lock, evaluate every test WAV, plot and report.
 
-    algo_name = "binary"
-    if len(sys.argv) > 1:
-        arg_algo = sys.argv[1].lower()
-        if arg_algo in ["binary", "histogram", "gaussian"]:
-            algo_name = arg_algo
-
-    thresholds, results, metrics_list = run_pipeline(
-        train_dir=ROOT_DIR / "TinHieuHuanLuyen",
-        test_dir=ROOT_DIR / "TinHieuKiemThu",
-        algorithm=algo_name,
-        output_dir=output_dir,
-        generate_plots=True,
+    Use the existing training model rather than refitting during a demonstration.
+    A missing lock/data or invalid model fails; there is no test-derived fallback.
+    Display the final Figures by default; show=False saves them without windows.
+    project_root supports another checkout and synthetic integration tests.
+    """
+    root = Path(project_root).resolve() if project_root is not None else Path(__file__).resolve().parent
+    config, model, information = load_frozen_histogram(root / "output" / "training" / "final_histogram_configuration.json")
+    print(format_training_information(information), end="\n\n")
+    report = evaluate_frozen_histogram(root / "data" / "tinhieukiemthu", config, model, information)
+    report_path = save_test_report(
+        report, root / "output" / "test" / "histogram_test_evaluation.json",
+        root / "docs" / "notes" / "histogram_test_evaluation.md",
     )
-
-    test_signals = load_dataset(ROOT_DIR / "TinHieuKiemThu")
-    algorithms = ["binary", "histogram", "gaussian"]
-    summary_by_algo = {}
-
-    for algo in algorithms:
-        m_list = []
-        for sig in test_signals:
-            th_val = thresholds.get_threshold(algo, sig.is_phone)
-            res = segment_signal(sig, th_val, algorithm=algo, min_silence_ms=200.0)
-            met = evaluate_signal(
-                sig, res.predicted_boundaries, algorithm=algo, threshold=th_val
-            )
-            m_list.append(met)
-        summary_by_algo[algo] = summarize_metrics(m_list)
-
-    report_json_path = ROOT_DIR / "reports" / "ket_qua_tong_hop.json"
-    report_json_path.parent.mkdir(parents=True, exist_ok=True)
-    report_data = {
-        "thresholds": {
-            "binary": {
-                "global": thresholds.binary_threshold,
-                "phone": thresholds.binary_threshold_phone,
-                "studio": thresholds.binary_threshold_studio,
-            },
-            "histogram": {
-                "global": thresholds.histogram_threshold,
-                "phone": thresholds.histogram_threshold_phone,
-                "studio": thresholds.histogram_threshold_studio,
-            },
-            "gaussian": {
-                "global": thresholds.gaussian_threshold,
-                "phone": thresholds.gaussian_threshold_phone,
-                "studio": thresholds.gaussian_threshold_studio,
-                "mean_speech": thresholds.mean_speech,
-                "std_speech": thresholds.std_speech,
-                "mean_silence": thresholds.mean_silence,
-                "std_silence": thresholds.std_silence,
-            },
-        },
-        "summary": summary_by_algo,
-    }
-    with open(report_json_path, "w", encoding="utf-8") as f:
-        json.dump(report_data, f, ensure_ascii=False, indent=2)
+    print(format_final_table(report))
+    # Print/save evaluation before the display call waits for windows to close.
+    paths = plot_test_report(report, root / "output" / "test" / "figures", show=show)
+    print(f"Created {len(paths)} main Figures for {report['number_of_wavs']} test WAVs.")
+    for path in paths:
+        print(path)
+    print(f"Detailed evaluation: {report_path}")
+    print(f"Noise/error summary: {report_path.with_name('noise_vs_error.json')}")
+    return paths
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--show", action=argparse.BooleanOptionalAction, default=True,
+                        help="Display the final Figures (default); --no-show saves them without windows.")
+    args = parser.parse_args()
+    try:
+        main(show=args.show)
+    except (OSError, ValueError, RuntimeError) as exc:
+        parser.exit(status=1, message=f"Histogram demonstration failed: {exc}\n")
