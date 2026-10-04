@@ -1,21 +1,7 @@
-"""Data contracts shared by audio, algorithms and evaluation."""
-from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Literal
+from dataclasses import dataclass, field
 import numpy as np
 
-FeatureType = Literal["ste", "ma", "logste", "logma"]
-Algorithm = Literal["histogram"]
-BinaryLabel = Literal["speech", "silence"]
-OriginalLabel = Literal["sil", "v", "uv"]
-
-@dataclass
-class GroundTruthSegment:
-    """Interval in seconds, retaining the original and binary labels."""
-    start: float
-    end: float
-    original_label: OriginalLabel
-    label: BinaryLabel
 
 @dataclass
 class AudioSignal:
@@ -24,13 +10,13 @@ class AudioSignal:
     fs: int
     signal: np.ndarray
     duration_sec: float
-    is_phone: bool  # Metadata for SNR analysis, not threshold selection.
-    gt_segments: list[GroundTruthSegment]
-    gt_boundaries: list[float]  # Speech/silence transitions in seconds.
+    is_phone: bool
+    gt_segments: list[tuple[float, float]]
+    gt_boundaries: list[float]
+
 
 @dataclass
 class FrameSignal:
-    """Frame arrays have shape (n_frames, frame_len); centers are seconds."""
     frames: np.ndarray
     timestamps: np.ndarray
     frame_len: int
@@ -38,48 +24,90 @@ class FrameSignal:
     fs: int
     raw_frames: np.ndarray
 
+
 @dataclass
 class ShortTimeFeatures:
-    """One selected feature with raw and transformed values per frame."""
-    feature_type: FeatureType
-    raw_values: np.ndarray  # STE or MA sums before the optional log transform.
-    values: np.ndarray  # Values used for training and prediction.
-    timestamps: np.ndarray
+    ste_raw: np.ndarray
+    ste_norm: np.ndarray  # preprocessed min-max
+    log_ste: np.ndarray = field(default_factory=lambda: np.array([]))
+
 
 @dataclass
 class Threshold:
-    """One method's threshold learned on train and reused on test."""
-    algorithm: Algorithm
-    feature_type: FeatureType
-    value: float
-    debug: dict[str, np.ndarray | float] = field(default_factory=dict)
+    binary_threshold: float
+    binary_threshold_phone: float
+    binary_threshold_studio: float
 
-@dataclass
+    histogram_threshold: float
+    histogram_threshold_phone: float
+    histogram_threshold_studio: float
+
+    gaussian_threshold: float
+    gaussian_threshold_phone: float
+    gaussian_threshold_studio: float
+
+    mean_speech: float = 0.0
+    std_speech: float = 0.0
+    mean_silence: float = 0.0
+    std_silence: float = 0.0
+
+    def get_threshold(
+        self, algorithm: str, is_phone: bool, use_common: bool = False
+    ) -> float:
+        if use_common:
+            if algorithm == "binary":
+                return self.binary_threshold
+            elif algorithm == "histogram":
+                return self.histogram_threshold
+            elif algorithm == "gaussian":
+                return self.gaussian_threshold
+            else:
+                raise ValueError(f"Unknown algorithm: {algorithm}")
+
+        if algorithm == "binary":
+            return (
+                self.binary_threshold_phone
+                if is_phone
+                else self.binary_threshold_studio
+            )
+        elif algorithm == "histogram":
+            return (
+                self.histogram_threshold_phone
+                if is_phone
+                else self.histogram_threshold_studio
+            )
+        elif algorithm == "gaussian":
+            return (
+                self.gaussian_threshold_phone
+                if is_phone
+                else self.gaussian_threshold_studio
+            )
+        else:
+            raise ValueError(f"Unknown algorithm: {algorithm}")
+
+
+@dataclass()
 class SegmentationResult:
     signal_name: str
-    algorithm: Algorithm
+    algorithm: str
     threshold_used: float
+
     timestamps: np.ndarray
-    raw_decisions: np.ndarray  # 0 = Silence; 1 = Speech.
+    raw_decisions: np.ndarray
     filtered_decisions: np.ndarray
+
     predicted_boundaries: list[float]
-    segments: list[tuple[float, float, BinaryLabel]]
+    segments: list[tuple[float, float, str]]  # [(start, end, "speech")]
+
 
 @dataclass
 class EvaluationMetrics:
     signal_name: str
     environment: str
-    algorithm: Algorithm
+    algorithm: str
     threshold: float
     mae_ms: float
     rmse_ms: float
     predicted_boundaries: list[float]
     gt_boundaries: list[float]
-    matched_count: int = 0
-    unmatched_predictions: int = 0
-    unmatched_ground_truth: int = 0
-    matched_pairs: list[tuple[float, float]] = field(default_factory=list)  # (predicted, GT) seconds.
-    errors_ms: list[float] = field(default_factory=list)  # Signed predicted-minus-GT errors.
-    unmatched_predicted_boundaries: list[float] = field(default_factory=list)
-    unmatched_gt_boundaries: list[float] = field(default_factory=list)
-    matching_tolerance_ms: float = 100.0
+    snr_db: float = 0.0
