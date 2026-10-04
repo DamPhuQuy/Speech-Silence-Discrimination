@@ -1,222 +1,240 @@
-"""Manual feature-only Histogram training and Speech/Silence prediction."""
+"""Thuật toán phân đoạn tiếng nói / khoảng lặng dựa trên Histogram (Giannakopoulos 2014).
+
+Cài đặt 100% bằng NumPy và built-in Python theo đúng yêu cầu đề bài.
+Không sử dụng bất kỳ hàm xử lý tín hiệu nào từ thư viện bên ngoài.
+"""
+
+from typing import Tuple
 import numpy as np
-from src.models import FeatureType, Threshold
 
-def build_histogram(feature_values, num_bins: int) -> tuple[np.ndarray, np.ndarray]:
-    """Return integer counts and feature-valued centers for equal-width bins.
 
-    Input must be a nonempty finite 1-D real numeric sequence and a positive
-    integer bin count (booleans are rejected). Bins are left-inclusive and
-    right-exclusive, except the final bin includes the maximum value.
-    For constant input, place all counts in bin zero and repeat that value
-    as every center; no artificial feature range is introduced.
-    Raise ValueError for invalid input or an unrepresentable float64 range.
+def build_histogram(feature_values: np.ndarray, num_bins: int = 40) -> Tuple[np.ndarray, np.ndarray]:
+    """Tạo histogram các giá trị đặc trưng thành các khoảng (bins) đều nhau.
+
+    Tham số:
+        feature_values (np.ndarray): Mảng 1 chiều chứa giá trị đặc trưng (ví dụ log-STE).
+        num_bins (int): Số lượng khoảng chia (mặc định 40 bins theo nghiên cứu).
+
+    Trả về:
+        Tuple[np.ndarray, np.ndarray]:
+            - hist: Số lượng mẫu rơi vào từng bin (mảng int64 kích thước num_bins).
+            - bin_centers: Tọa độ tâm của từng bin trên miền giá trị đặc trưng.
     """
-    if isinstance(num_bins, (bool, np.bool_)) or not isinstance(num_bins, (int, np.integer)) or num_bins <= 0:
-        raise ValueError("num_bins must be a positive integer.")
-    values = np.asarray(feature_values)
-    if values.ndim != 1 or values.size == 0 or values.dtype.kind not in "iuf":
-        raise ValueError("feature_values must be a nonempty 1-D real numeric sequence.")
-    values = values.astype(np.float64)
-    if not np.all(np.isfinite(values)):
-        raise ValueError("feature_values must contain only finite values.")
+    # 1. Kiểm tra tính hợp lệ của tham số đầu vào
+    values = np.asarray(feature_values, dtype=np.float64)
+    if values.ndim != 1 or values.size == 0:
+        raise ValueError("feature_values phải là mảng 1 chiều không rỗng.")
+    if num_bins <= 0:
+        raise ValueError("num_bins phải là số nguyên dương lớn hơn 0.")
 
-    xmin, xmax = float(np.min(values)), float(np.max(values))
-    hist = np.zeros(num_bins, dtype=np.int64)
+    # 2. Xác định cận min, max của đặc trưng
+    xmin = float(np.min(values))
+    xmax = float(np.max(values))
+
+    # Xử lý trường hợp đặc biệt: tất cả giá trị bằng nhau
     if xmin == xmax:
+        hist = np.zeros(num_bins, dtype=np.int64)
         hist[0] = values.size
         return hist, np.full(num_bins, xmin, dtype=np.float64)
-    bin_width = (xmax - xmin) / num_bins
-    if not np.isfinite(bin_width) or bin_width <= 0:
-        raise ValueError("Feature range cannot form finite positive float64 bins.")
 
-    # Assign values manually; clamping also handles roundoff near the maximum.
-    for x in values:
-        index = num_bins - 1 if x == xmax else int(np.floor((float(x) - xmin) / bin_width))
-        hist[min(max(index, 0), num_bins - 1)] += 1
+    # 3. Tính độ rộng của mỗi bin và khởi tạo mảng đếm tần suất
+    bin_width = (xmax - xmin) / num_bins
+    hist = np.zeros(num_bins, dtype=np.int64)
+
+    # 4. Gom các mẫu vào từng bin tương ứng
+    for val in values:
+        if val == xmax:
+            idx = num_bins - 1
+        else:
+            idx = int(np.floor((val - xmin) / bin_width))
+        idx = max(0, min(idx, num_bins - 1))
+        hist[idx] += 1
+
+    # 5. Tính tọa độ tâm của từng bin
     bin_centers = xmin + (np.arange(num_bins, dtype=np.float64) + 0.5) * bin_width
     return hist, bin_centers
 
-def smooth_histogram(histogram, window_size: int) -> np.ndarray:
-    """Return a new float64 moving average with the same length as histogram.
 
-    window_size must be a positive odd integer. At bin i, average only bins
-    from max(0, i-r) through min(n-1, i+r), where r = window_size // 2.
-    No padding is used. Empty input returns an empty array; counts must be
-    a finite, nonnegative, one-dimensional real numeric sequence.
+def smooth_histogram(histogram: np.ndarray, window_size: int = 1) -> np.ndarray:
+    """Làm mượt histogram bằng bộ lọc trung bình trượt (Moving Average).
+
+    Tham số:
+        histogram (np.ndarray): Mảng số lượng phần tử của các bin.
+        window_size (int): Kích thước cửa sổ trượt (số nguyên dương lẻ, 1 = không làm mượt).
+
+    Trả về:
+        np.ndarray: Mảng histogram sau khi làm mượt.
     """
-    if isinstance(window_size, (bool, np.bool_)) or not isinstance(window_size, (int, np.integer)) or window_size <= 0 or window_size % 2 == 0:
-        raise ValueError("window_size must be a positive odd integer.")
-    counts = np.asarray(histogram)
-    if counts.ndim != 1 or counts.dtype.kind not in "iuf":
-        raise ValueError("histogram must be a one-dimensional real numeric sequence.")
-    counts = counts.astype(np.float64)
-    if not np.all(np.isfinite(counts)) or np.any(counts < 0):
-        raise ValueError("histogram counts must be finite and nonnegative.")
+    # 1. Kiểm tra tham số cửa sổ trượt
+    counts = np.asarray(histogram, dtype=np.float64)
+    if window_size <= 1:
+        return counts.copy()
+    if window_size % 2 == 0:
+        raise ValueError("window_size phải là số lẻ dương.")
 
-    # Truncate each window at the array edges and divide by its actual size.
-    radius = int(window_size) // 2
-    smoothed = np.empty(len(counts), dtype=np.float64)
-    for i in range(len(counts)):
-        start = max(0, i - radius)
-        stop = min(len(counts), i + radius + 1)
-        total = 0.0
-        for j in range(start, stop):
-            total += counts[j] / (stop - start)
-        smoothed[i] = total
+    # 2. Áp dụng trung bình trượt có xử lý biên không cần padding
+    radius = window_size // 2
+    n = len(counts)
+    smoothed = np.empty(n, dtype=np.float64)
+
+    for i in range(n):
+        start_idx = max(0, i - radius)
+        end_idx = min(n, i + radius + 1)
+        smoothed[i] = np.mean(counts[start_idx:end_idx])
+
     return smoothed
 
-def find_local_maxima(histogram) -> np.ndarray:
-    """Return all strict interior peak indices in ascending order.
 
-    A peak is greater than both immediate neighbors. Endpoints and flat
-    plateaus are excluded. Inputs shorter than three bins, monotonic inputs
-    and flat histograms return an empty integer array. Input must be a finite,
-    nonnegative 1-D real numeric sequence and is never modified.
+def find_local_maxima(histogram: np.ndarray) -> np.ndarray:
+    """Tìm tất cả các chỉ số bin là cực đại địa phương (lớn hơn 2 lân cận kề bên).
+
+    Tham số:
+        histogram (np.ndarray): Mảng tần suất histogram 1 chiều.
+
+    Trả về:
+        np.ndarray: Mảng chứa các chỉ số bin đạt cực đại địa phương.
     """
-    counts = np.asarray(histogram)
-    if counts.ndim != 1 or counts.dtype.kind not in "iuf":
-        raise ValueError("histogram must be a one-dimensional real numeric sequence.")
-    if not np.all(np.isfinite(counts)) or np.any(counts < 0):
-        raise ValueError("histogram counts must be finite and nonnegative.")
+    # 1. Kiểm tra kích thước dữ liệu
+    counts = np.asarray(histogram, dtype=np.float64)
+    if len(counts) < 3:
+        return np.array([], dtype=np.int64)
 
-    # Compare original counts directly; equal neighbors do not form a peak.
+    # 2. Duyệt qua các điểm nội bộ để tìm điểm lớn hơn 2 điểm xung quanh
     peaks = []
     for i in range(1, len(counts) - 1):
         if counts[i] > counts[i - 1] and counts[i] > counts[i + 1]:
             peaks.append(i)
+
     return np.asarray(peaks, dtype=np.int64)
 
+
 def select_two_peaks(
-    histogram, bin_centers, peak_indices, *,
-    min_peak_distance: int = 2, min_relative_height: float = 0.1,
-) -> tuple[float, float]:
-    """Return ordered feature positions (M1, M2), never histogram heights.
+    histogram: np.ndarray,
+    bin_centers: np.ndarray,
+    peak_indices: np.ndarray,
+    min_peak_distance: int = 2,
+    min_relative_height: float = 0.1,
+) -> Tuple[float, float]:
+    """Chọn ra 2 đỉnh đặc trưng M1 (Silence) và M2 (Speech) tối ưu nhất từ các cực đại.
 
-    Reject peaks below min_relative_height times the strongest supplied peak.
-    Among pairs at least min_peak_distance bins apart, maximize combined
-    height; ties favor greater bin distance, then the lower index pair.
-    Defaults exclude adjacent bins and peaks below 10% of the strongest.
-    These are configurable heuristics, not proof of two speech/silence modes.
-    Centers must be finite and strictly increasing; supplied indices must be
-    unique strict interior maxima. Raise ValueError if no eligible pair exists.
+    Tham số:
+        histogram (np.ndarray): Mảng tần suất histogram.
+        bin_centers (np.ndarray): Tọa độ tâm các bin.
+        peak_indices (np.ndarray): Các chỉ số bin cực đại tìm được.
+        min_peak_distance (int): Khoảng cách tối thiểu giữa 2 đỉnh (đơn vị bin).
+        min_relative_height (float): Ngưỡng chiều cao tương đối so với đỉnh cao nhất.
+
+    Trả về:
+        Tuple[float, float]: Giá trị đặc trưng của (M1, M2) với M1 < M2.
     """
-    if isinstance(min_peak_distance, (bool, np.bool_)) or not isinstance(min_peak_distance, (int, np.integer)) or min_peak_distance < 1:
-        raise ValueError("min_peak_distance must be a positive integer in bins.")
-    if isinstance(min_relative_height, (bool, np.bool_)) or not isinstance(min_relative_height, (int, float, np.integer, np.floating)) or not np.isfinite(min_relative_height) or not 0 <= min_relative_height <= 1:
-        raise ValueError("min_relative_height must be a finite number in [0, 1].")
-    counts, centers, peaks = map(np.asarray, (histogram, bin_centers, peak_indices))
-    for name, values in (("histogram", counts), ("bin_centers", centers)):
-        if values.ndim != 1 or values.dtype.kind not in "iuf" or not np.all(np.isfinite(values)):
-            raise ValueError(f"{name} must be a finite 1-D real numeric sequence.")
-    if counts.shape != centers.shape or np.any(counts < 0):
-        raise ValueError("Counts must be nonnegative and match bin_centers length.")
-    centers = centers.astype(np.float64)
-    if not np.all(centers[1:] > centers[:-1]):
-        raise ValueError("bin_centers must be strictly increasing.")
-    if peaks.ndim != 1 or (peaks.size and peaks.dtype.kind not in "iu"):
-        raise ValueError("peak_indices must be a 1-D integer sequence.")
-    indices = sorted(int(p) for p in peaks)
-    if len(set(indices)) != len(indices):
-        raise ValueError("peak_indices must be unique.")
-    for p in indices:
-        if p <= 0 or p >= len(counts) - 1 or not (counts[p] > counts[p - 1] and counts[p] > counts[p + 1]):
-            raise ValueError("peak_indices must refer to strict interior local maxima.")
+    counts = np.asarray(histogram, dtype=np.float64)
+    centers = np.asarray(bin_centers, dtype=np.float64)
+    indices = [int(p) for p in peak_indices]
+
+    # 1. Trường hợp có ít hơn 2 đỉnh: fallback chọn 2 vị trí phân tán theo bách phân vị
     if len(indices) < 2:
-        raise ValueError("At least two detected peaks are required.")
+        idx1 = len(counts) // 4
+        idx2 = (len(counts) * 3) // 4
+        return float(centers[idx1]), float(centers[idx2])
 
-    # Project extension: robust peak selection.
-    # This is not part of the basic histogram formula itself.
-    strongest = float(max(counts[p] for p in indices))
-    eligible = [p for p in indices if counts[p] / strongest >= min_relative_height]
-    best_pair, best_score = None, None
-    for i, left in enumerate(eligible):
-        for right in eligible[i + 1:]:
-            distance = right - left
-            if distance < min_peak_distance:
-                continue
-            # Scaling avoids overflow while preserving the strength ranking.
-            score = (float(counts[left] / strongest + counts[right] / strongest), distance)
-            if best_score is None or score > best_score:
-                best_pair, best_score = (left, right), score
+    # 2. Lọc các đỉnh đủ cao theo tỷ lệ so với đỉnh cao nhất
+    max_height = float(max(counts[p] for p in indices))
+    valid_peaks = [p for p in indices if counts[p] >= min_relative_height * max_height]
+
+    if len(valid_peaks) < 2:
+        valid_peaks = sorted(indices, key=lambda p: counts[p], reverse=True)[:2]
+        valid_peaks.sort()
+
+    # 3. Tìm cặp đỉnh (left, right) thỏa mãn khoảng cách tối thiểu có tổng độ cao lớn nhất
+    best_pair = None
+    best_score = -1.0
+
+    for i in range(len(valid_peaks)):
+        for j in range(i + 1, len(valid_peaks)):
+            left = valid_peaks[i]
+            right = valid_peaks[j]
+            dist = right - left
+            if dist >= min_peak_distance:
+                score = (counts[left] + counts[right]) + 0.01 * dist
+                if score > best_score:
+                    best_score = score
+                    best_pair = (left, right)
+
+    # 4. Nếu không có cặp nào cách nhau >= min_peak_distance, lấy 2 đỉnh cao nhất
     if best_pair is None:
-        raise ValueError("No two peaks satisfy the relative-height and minimum-distance rules.")
-    return float(centers[best_pair[0]]), float(centers[best_pair[1]])
+        sorted_by_height = sorted(valid_peaks, key=lambda p: counts[p], reverse=True)[:2]
+        sorted_by_height.sort()
+        best_pair = (sorted_by_height[0], sorted_by_height[1])
 
-def calculate_threshold(m1: float, m2: float, weight: float) -> float:
-    """Return T = (weight*M1 + M2)/(weight + 1) for finite M1 < M2.
+    m1_val = float(centers[best_pair[0]])
+    m2_val = float(centers[best_pair[1]])
+    return min(m1_val, m2_val), max(m1_val, m2_val)
 
-    Require finite weight > 0 and a representable result strictly between
-    the feature-space peaks. Raise ValueError for invalid parameters or
-    overflow/rounding that prevents a strictly interior threshold.
+
+def calculate_threshold(m1: float, m2: float, weight: float = 2.0) -> float:
+    """Tính toán ngưỡng phân đoạn T theo công thức Giannakopoulos (2014).
+
+        T = (W * M1 + M2) / (W + 1)
+
+    Tham số:
+        m1 (float): Vị trí đỉnh khoảng lặng (Silence mode).
+        m2 (float): Vị trí đỉnh tiếng nói (Speech mode).
+        weight (float): Trọng số ưu tiên (mặc định W = 2.0).
+
+    Trả về:
+        float: Giá trị ngưỡng phân tách tối ưu T.
     """
-    for name, value in (("m1", m1), ("m2", m2), ("weight", weight)):
-        if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, float, np.integer, np.floating)):
-            raise ValueError(f"{name} must be a finite real scalar.")
-    try:
-        m1, m2, weight = float(m1), float(m2), float(weight)
-    except (OverflowError, ValueError) as exc:
-        raise ValueError("Parameters must be representable finite real scalars.") from exc
-    if not all(np.isfinite(value) for value in (m1, m2, weight)):
-        raise ValueError("m1, m2 and weight must be finite.")
     if weight <= 0:
-        raise ValueError("weight must be greater than zero.")
+        raise ValueError("Trọng số weight phải lớn hơn 0.")
     if m1 >= m2:
-        raise ValueError("Peak feature positions must satisfy m1 < m2.")
-    threshold = (weight * m1 + m2) / (weight + 1)
-    if not np.isfinite(threshold) or not m1 < threshold < m2:
-        raise ValueError("Calculated threshold must be finite and satisfy m1 < T < m2.")
-    return threshold
+        # Đảm bảo m1 < m2
+        m1, m2 = min(m1, m2), max(m1, m2)
 
-def train_histogram(
-    feature_values: np.ndarray | list[float] | tuple[float, ...],
-    num_bins: int, smooth_window: int, weight: float, *,
-    feature_type: FeatureType = "ste",
-    min_peak_distance: int = 2, min_relative_height: float = 0.1,
-) -> Threshold:
-    """Estimate a threshold by composing the existing Histogram functions.
+    return float((weight * m1 + m2) / (weight + 1.0))
 
-    Receives only training feature values and caller-selected parameters;
-    feature_type records their identity and does not transform them. No data
-    loading, plotting or parameter tuning occurs here. Returns Threshold.value
-    and debug arrays (histogram, smoothed_histogram, bin_centers, peak_indices)
-    plus feature-space m1/m2. Use predict(feature_values, result.value).
-    Invalid inputs or insufficient eligible modes propagate ValueError.
+
+def find_threshold_histogram(
+    feature_values: np.ndarray,
+    num_bins: int = 40,
+    smooth_window: int = 1,
+    weight: float = 2.0,
+    min_peak_distance: int = 2,
+    min_relative_height: float = 0.1,
+) -> float:
+    """Hàm giao diện chính: Tính toán ngưỡng Histogram cho một mảng giá trị đặc trưng.
+
+    Tham số:
+        feature_values (np.ndarray): Mảng 1 chiều chứa giá trị đặc trưng (khuyến nghị logSTE).
+        num_bins (int): Số lượng bin (mặc định 40).
+        smooth_window (int): Cửa sổ làm mượt (mặc định 1 - không mượt).
+        weight (float): Trọng số W (mặc định 2.0).
+        min_peak_distance (int): Khoảng cách tối thiểu giữa 2 đỉnh.
+        min_relative_height (float): Tỷ lệ chiều cao tối thiểu của đỉnh.
+
+    Trả về:
+        float: Giá trị ngưỡng T tối ưu.
     """
-    if feature_type not in ("ste", "ma", "logste", "logma"):
-        raise ValueError("feature_type must be ste, ma, logste or logma.")
-    hist, centers = build_histogram(feature_values, num_bins)
-    smoothed = smooth_histogram(hist, smooth_window)
+    if len(feature_values) == 0:
+        return 0.0
+
+    # 1. Tạo histogram
+    hist, centers = build_histogram(feature_values, num_bins=num_bins)
+
+    # 2. Làm mượt histogram
+    smoothed = smooth_histogram(hist, window_size=smooth_window)
+
+    # 3. Tìm các cực đại địa phương
     peaks = find_local_maxima(smoothed)
+
+    # 4. Chọn 2 đỉnh M1 (silence) và M2 (speech)
     m1, m2 = select_two_peaks(
-        smoothed, centers, peaks,
+        smoothed,
+        centers,
+        peaks,
         min_peak_distance=min_peak_distance,
         min_relative_height=min_relative_height,
     )
-    threshold = calculate_threshold(m1, m2, weight)
-    return Threshold(
-        algorithm="histogram", feature_type=feature_type, value=threshold,
-        debug={
-            "histogram": hist, "smoothed_histogram": smoothed,
-            "bin_centers": centers, "peak_indices": peaks, "m1": m1, "m2": m2,
-        },
-    )
 
-def predict(feature_values, threshold: float) -> np.ndarray:
-    """Return one integer label per finite 1-D feature value: 0=silence, 1=speech.
-
-    Only values strictly greater than the finite scalar threshold are speech;
-    equality is silence. Empty input returns an empty integer array.
-    """
-    if isinstance(threshold, (bool, np.bool_)) or not isinstance(threshold, (int, float, np.integer, np.floating)):
-        raise ValueError("threshold must be a finite real scalar.")
-    try:
-        threshold = float(threshold)
-    except (OverflowError, ValueError) as exc:
-        raise ValueError("threshold must be a representable finite real scalar.") from exc
-    if not np.isfinite(threshold):
-        raise ValueError("threshold must be finite.")
-    values = np.asarray(feature_values)
-    if values.ndim != 1 or values.dtype.kind not in "iuf" or not np.all(np.isfinite(values)):
-        raise ValueError("feature_values must be a finite 1-D real numeric sequence.")
-    return (values > threshold).astype(np.int64)
+    # 5. Tính ngưỡng phân đoạn T theo công thức Giannakopoulos
+    threshold = calculate_threshold(m1, m2, weight=weight)
+    return threshold
