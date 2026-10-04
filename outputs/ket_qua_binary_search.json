@@ -1,0 +1,83 @@
+{
+  "threshold_T": -3.112070092393009,
+  "lower_state": "silence",
+  "frame_ms": 25,
+  "hop_ms": 10,
+  "min_silence_ms": 200,
+  "train_snr_db": {
+    "phone_F1": 23.772499235837927,
+    "phone_M1": 23.28474683274749,
+    "studio_F1": 38.768332107201005,
+    "studio_M1": 37.803172226480235
+  },
+  "test_results": [
+    {
+      "name": "phone_F2",
+      "snr_db": 24.77276888905117,
+      "n_gt_boundaries": 2,
+      "n_pred_boundaries": 5,
+      "rmse_ms": 83.10385069297311,
+      "mae_ms": 59.99999999999983,
+      "pred_boundaries": [
+        0.6175,
+        0.6375,
+        1.0175,
+        4.1575,
+        4.4875
+      ],
+      "gt_boundaries": [
+        1.02,
+        4.04
+      ]
+    },
+    {
+      "name": "phone_M2",
+      "snr_db": 27.00115283352963,
+      "n_gt_boundaries": 2,
+      "n_pred_boundaries": 3,
+      "rmse_ms": 5.59016994374938,
+      "mae_ms": 4.9999999999999485,
+      "pred_boundaries": [
+        0.1075,
+        0.5275,
+        2.5275
+      ],
+      "gt_boundaries": [
+        0.53,
+        2.52
+      ]
+    },
+    {
+      "name": "studio_F2",
+      "snr_db": 49.293963220376575,
+      "n_gt_boundaries": 2,
+      "n_pred_boundaries": 2,
+      "rmse_ms": 2.5056689342405347,
+      "mae_ms": 2.5056689342405347,
+      "pred_boundaries": [
+        0.7674943310657596,
+        2.3674943310657595
+      ],
+      "gt_boundaries": [
+        0.77,
+        2.37
+      ]
+    },
+    {
+      "name": "studio_M2",
+      "snr_db": 37.6713958507819,
+      "n_gt_boundaries": 2,
+      "n_pred_boundaries": 2,
+      "rmse_ms": 7.494331065759724,
+      "mae_ms": 7.494331065759724,
+      "pred_boundaries": [
+        0.45749433106575965,
+        1.9374943310657597
+      ],
+      "gt_boundaries": [
+        0.45,
+        1.93
+      ]
+    }
+  ]
+}
