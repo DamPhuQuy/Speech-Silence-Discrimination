@@ -55,7 +55,6 @@ def main() -> None:
                 th_val,
                 algorithm=algo,
                 min_silence_ms=200.0,
-                min_speech_ms=30.0,
             )
             met = evaluate_signal(
                 sig,

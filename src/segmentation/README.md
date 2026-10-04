@@ -22,8 +22,7 @@ Cài đặt các thuật toán tìm ngưỡng phân đoạn Speech/Silence, phâ
   - **Ngưỡng quy chuẩn toàn cục (`global`)**: Tính ngưỡng dùng chung cho cả 4 file huấn luyện theo đúng quy định barem đề bài.
   - **Ngưỡng thích nghi môi trường (`phone`, `studio`)**: Tính riêng cho từng môi trường để đánh giá mức độ ảnh hưởng của SNR.
 * **`postprocess.py`**: Hậu xử lý kết quả phân đoạn:
-  - **`filter_short_silence`**: Gộp các khoảng lặng ảo $< 200\text{ ms}$ theo đúng quy định đề bài.
-  - **`filter_short_speech`**: Loại bỏ các mẩu tiếng nói ngắn $< 30\text{ ms}$ sinh ra do nhiễu xung micro (clicks) hoặc tiếng thở ở môi trường điện thoại.
+  - **`filter_short_silence`**: Gộp các khoảng lặng ảo $< 200\text{ ms}$ theo đúng quy định tuyệt đối của đề bài.
   - **`extract_boundaries_and_segments`**: Trích xuất các mốc biên thời gian thực với độ chính xác 6 số thập phân (tránh sai số làm tròn $0.0\text{ ms}$).
 * **`segment.py`**: Hàm điều phối phân đoạn tín hiệu kiểm thử hoàn chỉnh.
 
@@ -55,8 +54,6 @@ AudioSignal (File test) + Ngưỡng T
          ├──> Quyết định sơ bộ: Feature[i] >= T ? (1: Speech, 0: Silence)
          │
          ├──> [postprocess.py: filter_short_silence()]  --> Lọc khoảng lặng < 200ms
-         │
-         ├──> [postprocess.py: filter_short_speech()]   --> Lọc xung tiếng nói < 30ms
          │
          └──> [postprocess.py: extract_boundaries_and_segments()]
          │

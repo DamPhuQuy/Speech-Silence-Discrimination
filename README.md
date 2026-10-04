@@ -37,10 +37,9 @@ Dự án cài đặt, tối ưu hóa và đánh giá định lượng 03 thuật
 * **Độ dịch khung (`frame_shift_ms`)**: Cố định $10\text{ ms}$.
 * **Cửa sổ phân tích**: Cửa sổ Hamming.
 * **Thời gian mốc khung**: Lấy tại **tâm của từng khung** ($t_i = \frac{i \cdot \text{shift} + \text{len}/2}{f_s}$) để đại diện trung thực cho năng lượng khung.
-* **Hậu xử lý 2 tầng (Post-processing)**:
-  1. `filter_short_silence`: Gộp các khoảng lặng xen giữa có độ dài $< 200\text{ ms}$ theo đúng quy định đề bài.
-  2. `filter_short_speech`: Loại bỏ các phân đoạn tiếng nói ảo $< 30\text{ ms}$ sinh ra do tiếng thở hoặc xung nhiễu micro (clicks) ở môi trường điện thoại.
-  3. `extract_boundaries_and_segments`: Trích xuất mốc biên với độ chính xác cao (6 chữ số thập phân) để phản ánh sai số vật lý trung thực.
+* **Hậu xử lý (Post-processing)**:
+  1. `filter_short_silence`: Gộp các khoảng lặng xen giữa có độ dài $< 200\text{ ms}$ theo đúng quy định tuyệt đối của đề bài.
+  2. `extract_boundaries_and_segments`: Trích xuất mốc biên với độ chính xác cao (6 chữ số thập phân) để phản ánh sai số vật lý trung thực.
 
 ---
 

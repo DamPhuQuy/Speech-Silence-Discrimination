@@ -35,39 +35,6 @@ def filter_short_silence(
     return filtered
 
 
-def filter_short_speech(
-    decisions: np.ndarray,
-    frame_shift_ms: float = 10.0,
-    min_speech_ms: float = 30.0,
-) -> np.ndarray:
-    """Loại bỏ các đoạn tiếng nói quá ngắn (< min_speech_ms), thường là nhiễu xung (clicks) hoặc tiếng thở."""
-    filtered: np.ndarray = np.copy(decisions)
-    num_frames: int = len(filtered)
-    min_sp_frames: int = int(round(min_speech_ms / frame_shift_ms))
-
-    in_speech: bool = False
-    sp_start: int = 0
-
-    for i in range(num_frames):
-        if filtered[i] == 1:
-            if not in_speech:
-                in_speech = True
-                sp_start = i
-        else:
-            if in_speech:
-                sp_duration_frames: int = i - sp_start
-                if sp_duration_frames < min_sp_frames:
-                    for k in range(sp_start, i):
-                        filtered[k] = 0
-                in_speech = False
-    if in_speech:
-        sp_duration_frames = num_frames - sp_start
-        if sp_duration_frames < min_sp_frames:
-            for k in range(sp_start, num_frames):
-                filtered[k] = 0
-
-    return filtered
-
 
 def extract_boundaries_and_segments(
     timestamps: np.ndarray,
