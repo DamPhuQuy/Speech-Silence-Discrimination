@@ -1,145 +1,234 @@
-"""One-to-one speech/silence boundary matching; errors use milliseconds."""
 import numpy as np
-from src.models import BinaryLabel, EvaluationMetrics, SegmentationResult, AudioSignal
-from src.segmentation.postprocess import decisions_to_segments, segment_boundaries
-from src.audio.labels import speech_silence_boundaries
-
-DEFAULT_BOUNDARY_TOLERANCE_MS = 100.0
-
-
-def _boundary_times(values: list[float], name: str) -> list[float]:
-    """Validate finite, nonnegative, strictly increasing second-valued times."""
-    array = np.asarray(values)
-    if array.ndim != 1 or array.dtype.kind not in "iuf":
-        raise ValueError(f"{name} must be a 1-D real numeric sequence.")
-    array = array.astype(np.float64)
-    if not np.all(np.isfinite(array)) or np.any(array < 0) or np.any(array[1:] <= array[:-1]):
-        raise ValueError(f"{name} must be finite, nonnegative and strictly increasing.")
-    return array.tolist()
+from src.models import AudioSignal, EvaluationMetrics, SegmentationResult
 
 
 def match_boundaries(
-    predicted: list[float], ground_truth: list[float], tolerance_ms: float | None = None, *,
-    predicted_types: list[BinaryLabel] | None = None,
-    ground_truth_types: list[BinaryLabel] | None = None,
-) -> tuple[list[tuple[float, float]], list[float], list[float]]:
-    """Return (predicted, GT) time pairs and unmatched times, all in seconds.
+    predicted_boundaries: list[float],
+    gt_boundaries: list[float],
+) -> list[tuple[float, float]]:
+    pred_sorted: list[float] = sorted(predicted_boundaries)
+    gt_sorted: list[float] = sorted(gt_boundaries)
 
-    Greedily accept the closest candidate pair first, within tolerance (inclusive;
-    None means the explicit 100 ms baseline, never unlimited matching). Each
-    boundary is used once and accepted pairs cannot cross in chronological order.
-    Ties favor earlier predicted then earlier GT indices. This simple greedy
-    strategy does not claim to maximize the number of matches. Optional types
-    denote the state AFTER a boundary; when supplied, only equal types match.
-    Report unmatched counts alongside errors to avoid hiding missed/extra events.
-    """
-    pred = _boundary_times(predicted, "predicted")
-    truth = _boundary_times(ground_truth, "ground_truth")
-    limit = DEFAULT_BOUNDARY_TOLERANCE_MS if tolerance_ms is None else tolerance_ms
-    if isinstance(limit, (bool, np.bool_)) or not isinstance(limit, (int, float, np.integer, np.floating)):
-        raise ValueError("tolerance_ms must be finite and nonnegative.")
-    try:
-        limit = float(limit)
-    except (OverflowError, ValueError) as exc:
-        raise ValueError("tolerance_ms must be finite and nonnegative.") from exc
-    if not np.isfinite(limit) or limit < 0:
-        raise ValueError("tolerance_ms must be finite and nonnegative.")
-    if (predicted_types is None) != (ground_truth_types is None):
-        raise ValueError("Supply both boundary-type sequences or neither.")
-    if predicted_types is not None:
-        for types, times in ((predicted_types, pred), (ground_truth_types, truth)):
-            if len(types) != len(times) or any(state not in ("speech", "silence") for state in types):
-                raise ValueError("Boundary types must match time lengths and use speech/silence.")
+    pairs: list[tuple[float, float]] = []
+    num_pred: int = len(pred_sorted)
+    num_gt: int = len(gt_sorted)
 
-    # Candidate errors are converted from seconds; closest valid pairs win.
-    candidates = []
-    for i, time in enumerate(pred):
-        for j, gt in enumerate(truth):
-            if predicted_types is not None and predicted_types[i] != ground_truth_types[j]:
-                continue
-            error_ms = abs(time - gt) * 1000
-            if error_ms <= limit or (limit > 0 and np.isclose(error_ms, limit, rtol=0, atol=1e-9)):
-                candidates.append((error_ms, i, j))
-    accepted = []
-    used_pred, used_gt = set(), set()
-    for _, i, j in sorted(candidates):
-        if i in used_pred or j in used_gt:
-            continue
-        if any((i - old_i) * (j - old_j) < 0 for old_i, old_j in accepted):
-            continue
-        accepted.append((i, j))
-        used_pred.add(i)
-        used_gt.add(j)
-    pairs = [(pred[i], truth[j]) for i, j in sorted(accepted)]
-    return pairs, [time for i, time in enumerate(pred) if i not in used_pred], [time for j, time in enumerate(truth) if j not in used_gt]
+    if num_pred == 0 or num_gt == 0:
+        return pairs
+
+    if num_pred == num_gt:
+        # Trường hợp số biên dự đoán và biên chuẩn bằng nhau: ghép 1-1 tuần tự
+        for i in range(num_gt):
+            pairs.append((pred_sorted[i], gt_sorted[i]))
+    else:
+        # Trường hợp số lượng biên lệch nhau: với mỗi biên chuẩn, tìm biên dự đoán gần nhất
+        for i in range(num_gt):
+            target_gt: float = gt_sorted[i]
+            best_pred: float = pred_sorted[0]
+            min_dist: float = abs(best_pred - target_gt)
+
+            for j in range(1, num_pred):
+                dist: float = abs(pred_sorted[j] - target_gt)
+                if dist < min_dist:
+                    min_dist = dist
+                    best_pred = pred_sorted[j]
+
+            pairs.append((best_pred, target_gt))
+
+    return pairs
 
 
-def _errors_ms(matched_pairs: list[tuple[float, float]]) -> np.ndarray:
-    """Validate pairs and return signed prediction-minus-GT errors in ms."""
-    if len(matched_pairs) == 0:
-        return np.empty(0, dtype=np.float64)
-    pairs = np.asarray(matched_pairs)
-    if pairs.ndim != 2 or pairs.shape[1] != 2 or pairs.dtype.kind not in "iuf":
-        raise ValueError("Matched pairs must contain (predicted_seconds, GT_seconds).")
-    pairs = pairs.astype(np.float64)
-    if not np.all(np.isfinite(pairs)) or np.any(pairs < 0):
-        raise ValueError("Matched times must be finite and nonnegative.")
-    with np.errstate(over="raise", invalid="raise"):
-        try:
-            return (pairs[:, 0] - pairs[:, 1]) * 1000
-        except FloatingPointError as exc:
-            raise ValueError("Boundary errors exceed finite millisecond range.") from exc
+def compute_mae(
+    predicted_boundaries: list[float],
+    gt_boundaries: list[float],
+) -> float:
+    if len(predicted_boundaries) == 0 or len(gt_boundaries) == 0:
+        return 0.0
+
+    pairs: list[tuple[float, float]] = match_boundaries(predicted_boundaries, gt_boundaries)
+    num_pairs: int = len(pairs)
+    if num_pairs == 0:
+        return 0.0
+
+    total_abs_error_sec: float = 0.0
+    for i in range(num_pairs):
+        pred_t: float = pairs[i][0]
+        gt_t: float = pairs[i][1]
+        abs_diff: float = abs(pred_t - gt_t)
+        total_abs_error_sec = total_abs_error_sec + abs_diff
+
+    mae_sec: float = total_abs_error_sec / num_pairs
+    mae_ms: float = mae_sec * 1000.0
+    return float(mae_ms)
 
 
-def boundary_mae_ms(matched_pairs: list[tuple[float, float]]) -> float:
-    """Return mean(abs(predicted-GT)*1000); no matched pairs yields NaN."""
-    errors = _errors_ms(matched_pairs)
-    return float(np.mean(np.abs(errors))) if errors.size else float("nan")
+def compute_rmse(
+    predicted_boundaries: list[float],
+    gt_boundaries: list[float],
+) -> float:
+    if len(predicted_boundaries) == 0 or len(gt_boundaries) == 0:
+        return 0.0
+
+    pairs: list[tuple[float, float]] = match_boundaries(predicted_boundaries, gt_boundaries)
+    num_pairs: int = len(pairs)
+    if num_pairs == 0:
+        return 0.0
+
+    total_sq_error_sec: float = 0.0
+    for i in range(num_pairs):
+        pred_t: float = pairs[i][0]
+        gt_t: float = pairs[i][1]
+        diff: float = pred_t - gt_t
+        total_sq_error_sec = total_sq_error_sec + (diff * diff)
+
+    mean_sq_error_sec: float = total_sq_error_sec / num_pairs
+    rmse_sec: float = float(np.sqrt(mean_sq_error_sec))
+    rmse_ms: float = rmse_sec * 1000.0
+    return float(rmse_ms)
 
 
-def boundary_rmse_ms(matched_pairs: list[tuple[float, float]]) -> float:
-    """Return sqrt(mean(((predicted-GT)*1000)**2)); no matches yields NaN."""
-    errors = _errors_ms(matched_pairs)
-    if not errors.size:
-        return float("nan")
-    scale = float(np.max(np.abs(errors)))
-    return scale * float(np.sqrt(np.mean((errors / scale) ** 2))) if scale else 0.0
+def estimate_snr_db(signal: AudioSignal, eps: float = 1e-10) -> float:
+    x = signal.signal.astype(np.float64)
+    sr = signal.fs
+    total_len = len(x)
+    is_speech = np.zeros(total_len, dtype=bool)
+    for s, e in signal.gt_segments:
+        i0 = max(0, int(round(s * sr)))
+        i1 = min(total_len, int(round(e * sr)))
+        is_speech[i0:i1] = True
+
+    speech_samples = x[is_speech]
+    silence_samples = x[~is_speech]
+
+    if len(speech_samples) == 0 or len(silence_samples) == 0:
+        return 0.0
+    sp_power = np.mean(speech_samples ** 2)
+    sil_power = np.mean(silence_samples ** 2) + eps
+    return float(10.0 * np.log10(sp_power / sil_power))
 
 
-def evaluate_result(signal: AudioSignal, result: SegmentationResult, tolerance_ms: float | None = None) -> EvaluationMetrics:
-    """Score postprocessed transition times; onset/offset types must correspond.
+def evaluate_signal(
+    signal: AudioSignal,
+    predicted_boundaries: list[float],
+    algorithm: str = "binary",
+    threshold: float = 0.0,
+) -> EvaluationMetrics:
+    mae_ms: float = compute_mae(predicted_boundaries, signal.gt_boundaries)
+    rmse_ms: float = compute_rmse(predicted_boundaries, signal.gt_boundaries)
+    snr_db: float = estimate_snr_db(signal)
 
-    Re-extract boundaries from filtered labels and frame centers; reject stale
-    stored boundaries. GT v/uv transitions are excluded by the LAB helper.
-    When GT intervals are available, constrain matching by transition type.
-    NaN errors mean no matches; callers exporting JSON should encode them null.
-    """
-    if signal.name != result.signal_name:
-        raise ValueError("Signal and segmentation result names must match.")
-    segments = decisions_to_segments(result.filtered_decisions, result.timestamps, signal.duration_sec)
-    predicted = segment_boundaries(segments)
-    if predicted != list(result.predicted_boundaries):
-        raise ValueError("Predicted boundaries must come from postprocessed frame labels.")
-    options = {}
-    if signal.gt_segments:
-        gt = speech_silence_boundaries(signal.gt_segments)
-        if gt != list(signal.gt_boundaries):
-            raise ValueError("Ground-truth boundaries must reflect speech/silence LAB transitions.")
-        pred_types = [current[2] for previous, current in zip(segments, segments[1:])
-                      if abs(previous[1] - current[0]) <= 1e-9 and previous[2] != current[2]]
-        gt_types = [current.label for previous, current in zip(signal.gt_segments, signal.gt_segments[1:])
-                    if abs(previous.end - current.start) <= 1e-9 and previous.label != current.label]
-        options = {"predicted_types": pred_types, "ground_truth_types": gt_types}
-    pairs, extras, misses = match_boundaries(predicted, signal.gt_boundaries, tolerance_ms, **options)
+    if signal.is_phone:
+        environment: str = "Phone"
+    else:
+        environment = "Studio"
+
     return EvaluationMetrics(
         signal_name=signal.name,
-        environment="phone" if signal.is_phone else
-        "studio" if signal.wav_path.stem.lower().startswith("studio_") else "unknown",
-        algorithm=result.algorithm, threshold=result.threshold_used,
-        mae_ms=boundary_mae_ms(pairs), rmse_ms=boundary_rmse_ms(pairs),
-        predicted_boundaries=predicted, gt_boundaries=list(signal.gt_boundaries),
-        matched_count=len(pairs), unmatched_predictions=len(extras), unmatched_ground_truth=len(misses),
-        matched_pairs=pairs, errors_ms=_errors_ms(pairs).tolist(),
-        unmatched_predicted_boundaries=extras, unmatched_gt_boundaries=misses,
-        matching_tolerance_ms=DEFAULT_BOUNDARY_TOLERANCE_MS if tolerance_ms is None else float(tolerance_ms),
+        environment=environment,
+        algorithm=algorithm,
+        threshold=threshold,
+        mae_ms=mae_ms,
+        rmse_ms=rmse_ms,
+        predicted_boundaries=predicted_boundaries,
+        gt_boundaries=signal.gt_boundaries,
+        snr_db=snr_db,
     )
+
+
+def evaluate_segmentation_result(
+    result: SegmentationResult,
+    signal: AudioSignal,
+) -> EvaluationMetrics:
+    return evaluate_signal(
+        signal=signal,
+        predicted_boundaries=result.predicted_boundaries,
+        algorithm=result.algorithm,
+        threshold=result.threshold_used,
+    )
+
+
+def summarize_metrics(
+    metrics_list: list[EvaluationMetrics],
+) -> dict[str, dict[str, float]]:
+    phone_maes: list[float] = []
+    phone_rmses: list[float] = []
+    studio_maes: list[float] = []
+    studio_rmses: list[float] = []
+    all_maes: list[float] = []
+    all_rmses: list[float] = []
+
+    for m in metrics_list:
+        all_maes.append(m.mae_ms)
+        all_rmses.append(m.rmse_ms)
+
+        if m.environment == "Phone":
+            phone_maes.append(m.mae_ms)
+            phone_rmses.append(m.rmse_ms)
+        else:
+            studio_maes.append(m.mae_ms)
+            studio_rmses.append(m.rmse_ms)
+
+    def _calc_average(values: list[float]) -> float:
+        if len(values) == 0:
+            return 0.0
+        total: float = 0.0
+        for val in values:
+            total = total + val
+        return float(total / len(values))
+
+    summary: dict[str, dict[str, float]] = {
+        "Phone": {
+            "mean_mae_ms": _calc_average(phone_maes),
+            "mean_rmse_ms": _calc_average(phone_rmses),
+            "count": float(len(phone_maes)),
+        },
+        "Studio": {
+            "mean_mae_ms": _calc_average(studio_maes),
+            "mean_rmse_ms": _calc_average(studio_rmses),
+            "count": float(len(studio_maes)),
+        },
+        "Overall": {
+            "mean_mae_ms": _calc_average(all_maes),
+            "mean_rmse_ms": _calc_average(all_rmses),
+            "count": float(len(all_maes)),
+        },
+    }
+
+    return summary
+
+
+def print_evaluation_table(metrics_list: list[EvaluationMetrics]) -> None:
+    separator: str = "=" * 99
+    print(separator)
+    header: str = (
+        f"{'Tên File':<14} | {'Môi trường':<10} | {'SNR (dB)':<8} | {'Thuật toán':<10} | "
+        f"{'Ngưỡng':<8} | {'MAE (ms)':<10} | {'RMSE (ms)':<10} | {'Số biên (Pred/GT)'}"
+    )
+    print(header)
+    print("-" * 99)
+
+    for m in metrics_list:
+        boundary_info: str = f"{len(m.predicted_boundaries)}/{len(m.gt_boundaries)}"
+        line: str = (
+            f"{m.signal_name:<14} | "
+            f"{m.environment:<10} | "
+            f"{m.snr_db:<8.1f} | "
+            f"{m.algorithm:<10} | "
+            f"{m.threshold:<8.4f} | "
+            f"{m.mae_ms:<10.2f} | "
+            f"{m.rmse_ms:<10.2f} | "
+            f"{boundary_info}"
+        )
+        print(line)
+
+    print(separator)
+
+    summary: dict[str, dict[str, float]] = summarize_metrics(metrics_list)
+    print("\n=== TỔNG HỢP SAI SỐ TRUNG BÌNH ===")
+    for env in ["Phone", "Studio", "Overall"]:
+        info = summary[env]
+        count_int = int(info["count"])
+        print(
+            f"• {env:<7}: MAE TB = {info['mean_mae_ms']:6.2f} ms | "
+            f"RMSE TB = {info['mean_rmse_ms']:6.2f} ms (Số file: {count_int})"
+        )

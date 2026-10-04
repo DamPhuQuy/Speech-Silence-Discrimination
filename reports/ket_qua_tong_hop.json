@@ -1,0 +1,76 @@
+{
+  "thresholds": {
+    "binary": {
+      "global": 0.0007981691283092101,
+      "phone": 0.0008256286807439392,
+      "studio": 0.0006436211084890984
+    },
+    "histogram": {
+      "global": -2.4375196566847372,
+      "phone": -3.5271117104562006,
+      "studio": -4.108068419406796
+    },
+    "gaussian": {
+      "global": 0.0007915703174527672,
+      "phone": 0.0011476208130037173,
+      "studio": 0.00041425341501015374,
+      "mean_speech": 0.20246675293446145,
+      "std_speech": 0.23569392194990846,
+      "mean_silence": 0.0002492661656348131,
+      "std_silence": 0.0006337804720099081
+    }
+  },
+  "summary": {
+    "histogram": {
+      "Phone": {
+        "mean_mae_ms": 27.499999999999915,
+        "mean_rmse_ms": 29.295391926806968,
+        "count": 2.0
+      },
+      "Studio": {
+        "mean_mae_ms": 8.747000000000005,
+        "mean_rmse_ms": 9.630913704231459,
+        "count": 2.0
+      },
+      "Overall": {
+        "mean_mae_ms": 18.12349999999996,
+        "mean_rmse_ms": 19.463152815519212,
+        "count": 4.0
+      }
+    },
+    "binary": {
+      "Phone": {
+        "mean_mae_ms": 34.99999999999992,
+        "mean_rmse_ms": 47.82624772223855,
+        "count": 2.0
+      },
+      "Studio": {
+        "mean_mae_ms": 7.494000000000001,
+        "mean_rmse_ms": 7.494000000000001,
+        "count": 2.0
+      },
+      "Overall": {
+        "mean_mae_ms": 21.24699999999996,
+        "mean_rmse_ms": 27.660123861119274,
+        "count": 4.0
+      }
+    },
+    "gaussian": {
+      "Phone": {
+        "mean_mae_ms": 34.99999999999992,
+        "mean_rmse_ms": 47.82624772223855,
+        "count": 2.0
+      },
+      "Studio": {
+        "mean_mae_ms": 7.494000000000001,
+        "mean_rmse_ms": 7.494000000000001,
+        "count": 2.0
+      },
+      "Overall": {
+        "mean_mae_ms": 21.24699999999996,
+        "mean_rmse_ms": 27.660123861119274,
+        "count": 4.0
+      }
+    }
+  }
+}
