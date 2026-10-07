@@ -1,0 +1,203 @@
+# Technical Decision: [DEC-ID] [Task ID]
+
+<technical_decision task_id="[TASK-ID]" dec_id="[DEC-ID]" version="2.0" framework="RIPER-5">
+
+<!-- READ-ONLY PHASE. Evaluating options. PAIR: human decides. DELEGATED: agent auto-selects optimal recommendation and advances. -->
+<decision_status>
+  <phase>INNOVATE</phase>
+  <mode>READ-ONLY</mode>
+  <halting_status>IN_PROGRESS</halting_status> <!-- IN_PROGRESS | CHALLENGED | READY_FOR_SIGN_OFF -->
+  <decision_owner>@architect</decision_owner>
+  <last_updated>[TIMESTAMP]</last_updated>
+</decision_status>
+
+---
+
+## 1. Design Space & Degrees of Freedom (I0: Design Space)
+
+<design_space>
+  <context_reference>
+    <task>[Link to task.md or Task ID]</task>
+    <research_artifact>[Link to research.md]</research_artifact>
+  </context_reference>
+
+  <mutable_dimensions>
+    <!-- Dimensions permitted to change (internal signatures, cache strategy, modular boundaries) -->
+    - [Dimension 1: Internal module refactoring or private helper redesign]
+  </mutable_dimensions>
+
+  <immutable_boundaries>
+    <!-- Boundaries that must remain strictly invariant (public API contracts, DB invariants, security rules) -->
+    - [Invariant 1: Public API contracts actively consumed by upstream callers must not break]
+    - [Invariant 2: Database transaction boundaries must preserve ACID guarantees]
+  </immutable_boundaries>
+
+  <hard_constraints>
+    <!-- Hard constraints narrowing solution space (latency SLAs, zero new dependencies, lockfile immutability) -->
+    - [Constraint 1: No alien dependencies added to package-lock / lockfile]
+    - [Constraint 2: Response time P99 SLA must not exceed latency thresholds]
+  </hard_constraints>
+</design_space>
+
+---
+
+## 2. Decision Required
+
+<decision_question>
+  [Precise statement of what needs to be decided. One focal question per decision artifact.]
+</decision_question>
+
+---
+
+## 3. Candidate Options (I1: Repo-Native Candidates)
+
+<!-- PRINCIPLE: REPO-NATIVE FIRST — Maximize existing abstractions and conventions established in repo -->
+<options>
+
+  <option id="A" type="Minimalist">
+    <title>In-Place Minimalist / Defect-Focused Intervention</title>
+    <approach>[Minimal solution, fixing defect directly at failure origin]</approach>
+    <repo_native_alignment>[Reuses existing helper functions and utilities in repository]</repo_native_alignment>
+    <complexity>LOW</complexity>
+    <blast_radius>MINIMAL</blast_radius>
+  </option>
+
+  <option id="B" type="Repo-Idiomatic">
+    <title>Repo-Idiomatic Architectural Alignment</title>
+    <approach>[Standard pattern aligned with repo conventions (Service/Repo/Layering)]</approach>
+    <repo_native_alignment>[Employs existing abstractions and event dispatchers from neighboring modules]</repo_native_alignment>
+    <complexity>MEDIUM</complexity>
+    <blast_radius>MODERATE</blast_radius>
+  </option>
+
+  <option id="C" type="Extensible">
+    <title>Extensible / Modular Isolation (Strategy / Adapter Pattern)</title>
+    <approach>[Future-proof architecture decoupled via interfaces]</approach>
+    <repo_native_alignment>[Conforms to existing Factory/Provider design contracts in codebase]</repo_native_alignment>
+    <complexity>HIGH</complexity>
+    <blast_radius>CONTROLLED</blast_radius>
+  </option>
+
+</options>
+
+---
+
+## 4. Weighted Pugh Decision Matrix (I2: Trade-Off Analysis)
+
+<!-- Baseline: Current system state (0). Scale: +1 (superior), 0 (neutral), -1 (inferior).
+     Selection rule: Selected option must achieve Total Weighted Score > 0. -->
+<pugh_matrix>
+
+| Evaluation Dimension | Weight ($W_i$) | Baseline (Current) | Option A (Minimalist) | Option B (Idiomatic) | Option C (Extensible) |
+|---|:---:|:---:|:---:|:---:|:---:|
+| **1. Algorithm Complexity & I/O Latency** | **3** | 0 | | | |
+| **2. Logic Isolation & Testability** | **3** | 0 | | | |
+| **3. Backward API Compatibility** | **2** | 0 | | | |
+| **4. Horizontal Scalability** | **2** | 0 | | | |
+| **5. Technical Debt & Code Complexity** | **2** | 0 | | | |
+| **Total Weighted Score ($\sum W_i \times S_{ij}$)** | -- | **0** | | | |
+
+</pugh_matrix>
+
+---
+
+## 5. Adversarial Critic Report (I3: Red Team Challenge)
+
+<adversarial_critic target_option="[OPTION_RECOMMENDED]">
+  <performance_critic>
+    <!-- Stress-test: time/space complexity, I/O bottlenecks, async/concurrency, connection pools -->
+    - [Performance Challenge 1: Latency impact and resource overhead under high throughput]
+  </performance_critic>
+
+  <security_and_hygiene_critic>
+    <!-- Audit: Clean Architecture boundaries, memory leaks, input sanitization, circular dependencies -->
+    - [Security Challenge 1: Trust boundary verification and injection / auth leakage risk]
+    - [Hygiene Challenge 1: Package dependency cycles or modular layering violations]
+  </security_and_hygiene_critic>
+
+  <broken_assumptions>
+    - [Which assumptions from Research phase risk invalidation in production?]
+  </broken_assumptions>
+
+  <research_gaps>
+    - [What critical omissions from Research phase did this design expose?]
+  </research_gaps>
+
+  <arbitrator_verdict rounds="1">
+    <!-- Debate hard cap: Maximum 2 rounds. Verdict: CLEARED or BACKTRACK_REQUIRED -->
+    <status>CLEARED</status>
+    <debate_summary>[Arbitrator's objective evaluation synthesizing critic rebuttals]</debate_summary>
+  </arbitrator_verdict>
+</adversarial_critic>
+
+---
+
+## 6. Recommendation
+
+<recommendation>
+  [Agent's technical recommendation and rationale based on trade-off matrix and adversarial critic evaluation.]
+</recommendation>
+
+---
+
+## 7. Implementation Decision & Negative Memory (I4: Decision & Graveyard)
+
+<!-- PAIR mode: Human engineer fills this section before approving Gate 1.
+     DELEGATED / Fast-Track mode: Agent automatically fills the recommended option,
+     records technical rationale, and signs Gate 1 with [AUTO: DELEGATED]. -->
+<engineer_decision>
+  <selected_option></selected_option>
+  <rationale></rationale>
+
+  <!-- NEGATIVE ARCHITECTURAL MEMORY: Mandatory recording of rejected alternatives to avoid repeating mistakes during Rollback -->
+  <rejected_alternatives>
+    <alternative id="[ID]">
+      <fatal_flaw>[Fatal defect or vulnerability causing this candidate to be rejected]</fatal_flaw>
+      <resurrection_condition>[Under what precise future conditions would this option be reconsidered?]</resurrection_condition>
+    </alternative>
+  </rejected_alternatives>
+
+  <residual_risks>
+    - [Residual Risk 1] — Mitigating verifier in Plan: [...]
+  </residual_risks>
+</engineer_decision>
+
+---
+
+## 8. Constraints Created
+
+<constraints_created>
+  [Downstream implementation constraints to carry forward into plan.md]
+  -
+</constraints_created>
+
+---
+
+## 9. Evidence Still Required
+
+<evidence_required>
+  [Unconfirmed facts or hypotheses that require explicit validation in Plan or Execute]
+  -
+</evidence_required>
+
+---
+
+## 10. Innovation Halting Verification (Gate G1 Sign-off)
+
+<halting_verification>
+  - [ ] **D_space (Design Space):** Mutable dimensions, immutable boundaries, and hard constraints are clearly identified.
+  - [ ] **S_alternatives (Alternatives):** At least 2–3 viable repo-native candidate options are proposed.
+  - [ ] **T_traded (Trade-offs):** Complete Weighted Pugh Decision Matrix is evaluated, with selected option score > 0.
+  - [ ] **A_challenged (Adversarial):** Selected design has withstood the Adversarial Critic with zero unmitigated fatal flaws.
+  - [ ] **D_decided (Decision & Memory):** Decision rationale and negative architectural memory (rejected alternatives) are locked.
+</halting_verification>
+
+<gate id="G1">
+  - [ ] All candidate options evaluated across Weighted Pugh Decision Matrix (selected candidate score > 0).
+  - [ ] Selected design and negative memory (rejected alternatives) recorded.
+  - [ ] No open business, schema, or security questions remaining unresolved.
+  <approved_by></approved_by>  <!-- Engineer name (PAIR) or [AUTO: DELEGATED] (DELEGATED/Fast-Track) -->
+  <approved_date></approved_date>
+</gate>
+
+</technical_decision>

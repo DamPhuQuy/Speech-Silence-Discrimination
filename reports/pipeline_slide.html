@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeline Phân Đoạn Tiếng Nói & Khoảng Lặng (VAD)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Khung chuẩn tỉ lệ 16:9 của Slide PowerPoint */
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            border: 1px solid #334155;
+            padding: 36px 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Tiêu đề Slide */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 14px;
+        }
+
+        .title-group h1 {
+            font-size: 26px;
+            font-weight: 800;
+            color: #38bdf8;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+        }
+
+        .title-group p {
+            font-size: 17px;
+            color: #94a3b8;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .badge-common {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid #38bdf8;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        /* Thân Pipeline: Bố cục 4 khối ngang */
+        .pipeline-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 20px 0;
+            flex: 1;
+        }
+
+        .card {
+            background: #1e293b;
+            border-radius: 14px;
+            padding: 20px 18px;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            height: 380px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease;
+        }
+
+        .card-sm {
+            width: 220px;
+        }
+
+        .card-lg {
+            width: 380px;
+            border: 2px solid #38bdf8;
+            background: linear-gradient(180deg, #1e293b 0%, #162032 100%);
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #38bdf8;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 15px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .card-content {
+            font-size: 15px;
+            color: #cbd5e1;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .item {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border-left: 3px solid #64748b;
+        }
+
+        .item-accent {
+            border-left-color: #38bdf8;
+        }
+
+        .item-success {
+            border-left-color: #10b981;
+        }
+
+        .item-title {
+            font-weight: 700;
+            font-size: 15px;
+            color: #f8fafc;
+        }
+
+        .item-desc {
+            font-size: 13.5px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* 3 nhánh con của Thuật toán */
+        .algo-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+
+        .algo-card {
+            background: rgba(15, 23, 42, 0.85);
+            padding: 9px 12px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .algo-card.hist { border-left: 4px solid #f59e0b; }
+        .algo-card.bin  { border-left: 4px solid #8b5cf6; }
+        .algo-card.gauss { border-left: 4px solid #10b981; }
+
+        .algo-name {
+            font-weight: 700;
+            font-size: 14.5px;
+            color: #f8fafc;
+        }
+
+        .algo-sub {
+            font-size: 12.5px;
+            color: #94a3b8;
+        }
+
+        .algo-tag {
+            font-family: "Courier New", Courier, monospace;
+            font-weight: 800;
+            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: #0f172a;
+        }
+
+        .algo-tag.hist { color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .algo-tag.bin  { color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
+        .algo-tag.gauss { color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        /* Mũi tên kết nối */
+        .arrow {
+            color: #475569;
+            font-size: 26px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Footer: Bảng đối chiếu kết quả MAE kiểm thử */
+        .footer-banner {
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 12px;
+            border: 1px solid #334155;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-label {
+            font-size: 15px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metrics-group {
+            display: flex;
+            gap: 28px;
+        }
+
+        .metric-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+        }
+
+        .metric-val {
+            font-family: "Courier New", Courier, monospace;
+            font-weight: 800;
+            font-size: 16px;
+            color: #38bdf8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="slide-container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="title-group">
+                <h1>Pipeline Toàn Cảnh Phân Đoạn Tiếng Nói & Khoảng Lặng (VAD)</h1>
+                <p>Khung kiến trúc chung và điểm rẽ nhánh của 3 thuật toán (Histogram • Binary Search • Gaussian)</p>
+            </div>
+            <div class="badge-common">ĐỒNG BỘ 100% TIÊU CHUẨN ĐỀ BÀI</div>
+        </div>
+
+        <!-- PIPELINE FLOW -->
+        <div class="pipeline-wrapper">
+            
+            <!-- KHỐI 1 -->
+            <div class="card card-sm">
+                <div class="card-header">
+                    <div class="step-num">1</div>
+                    <div class="card-title">Tiền Xử Lý</div>
+                </div>
+                <div class="card-content">
+                    <div class="item item-accent">
+                        <div class="item-title">Mono 1 Kênh</div>
+                        <div class="item-desc">Chống lỗi đa kênh Stereo</div>
+                    </div>
+                    <div class="item item-accent">
+                        <div class="item-title">Float32 [-1, 1]</div>
+                        <div class="item-desc">Triệt tiêu tràn số nguyên âm</div>
+                    </div>
+                    <div class="item item-accent">
+                        <div class="item-title">Khử DC Offset</div>
+                        <div class="item-desc">Xóa sàn năng lượng ảo</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">➔</div>
+
+            <!-- KHỐI 2 -->
+            <div class="card card-sm">
+                <div class="card-header">
+                    <div class="step-num">2</div>
+                    <div class="card-title">Đặc Trưng</div>
+                </div>
+                <div class="card-content">
+                    <div class="item item-accent">
+                        <div class="item-title">Phân Khung</div>
+                        <div class="item-desc">25 ms / Hop 10 ms (60%)</div>
+                    </div>
+                    <div class="item item-accent">
+                        <div class="item-title">Mốc Tâm Khung</div>
+                        <div class="item-desc">t = (start + len/2) / Fs</div>
+                    </div>
+                    <div class="item item-accent">
+                        <div class="item-title">Năng Lượng STE</div>
+                        <div class="item-desc">Chuẩn hóa Min-Max & log</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">➔</div>
+
+            <!-- KHỐI 3: PHÂN NHÁNH 3 THUẬT TOÁN -->
+            <div class="card card-lg">
+                <div class="card-header">
+                    <div class="step-num" style="background:#38bdf8;">3</div>
+                    <div class="card-title" style="color:#38bdf8;">Khối Tìm Ngưỡng Toàn Cục T* (Khác Biệt Duy Nhất)</div>
+                </div>
+                <div class="card-content">
+                    <div class="algo-grid">
+                        <div class="algo-card hist">
+                            <div>
+                                <div class="algo-name">Histogram (Giannakopoulos)</div>
+                                <div class="algo-sub">Tìm 2 đỉnh phân bố trên log(STE)</div>
+                            </div>
+                            <div class="algo-tag hist">T* = -2.4375</div>
+                        </div>
+
+                        <div class="algo-card bin">
+                            <div>
+                                <div class="algo-name">Binary Search (Hodgkinson)</div>
+                                <div class="algo-sub">Cân bằng diện tích nhầm lẫn (Overlap)</div>
+                            </div>
+                            <div class="algo-tag bin">T* = 0.00080</div>
+                        </div>
+
+                        <div class="algo-card gauss">
+                            <div>
+                                <div class="algo-name">Gaussian (Simple Statistics)</div>
+                                <div class="algo-sub">Cân bằng khoảng cách z-score MLE</div>
+                            </div>
+                            <div class="algo-tag gauss">T* = 0.00079</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">➔</div>
+
+            <!-- KHỐI 4 -->
+            <div class="card card-sm">
+                <div class="card-header">
+                    <div class="step-num">4</div>
+                    <div class="card-title">Hậu Xử Lý</div>
+                </div>
+                <div class="card-content">
+                    <div class="item item-success">
+                        <div class="item-title">Lọc Silence</div>
+                        <div class="item-desc">Gộp khoảng lặng &lt; 200 ms</div>
+                    </div>
+                    <div class="item item-success">
+                        <div class="item-title">Lọc Clicks</div>
+                        <div class="item-desc">Xóa xung nhiễu &lt; 30 ms</div>
+                    </div>
+                    <div class="item item-success">
+                        <div class="item-title">Trích Xuất Biên</div>
+                        <div class="item-desc">Ghép cặp 1-1 (tol ≤ 250ms)</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FOOTER: KẾT QUẢ ĐỐI CHIẾU -->
+        <div class="footer-banner">
+            <div class="footer-label">Kết Quả Kiểm Thử Toàn Cục (Overall MAE):</div>
+            <div class="metrics-group">
+                <div class="metric-item">
+                    <span>Histogram:</span>
+                    <span class="metric-val" style="color:#f59e0b;">18.12 ms</span>
+                </div>
+                <div class="metric-item">
+                    <span>Binary Search:</span>
+                    <span class="metric-val" style="color:#a78bfa;">21.25 ms</span>
+                </div>
+                <div class="metric-item">
+                    <span>Gaussian:</span>
+                    <span class="metric-val" style="color:#34d399;">21.25 ms</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

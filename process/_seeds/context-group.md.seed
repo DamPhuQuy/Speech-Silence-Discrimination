@@ -1,0 +1,250 @@
+# Research: [TASK-ID]
+
+<research_context task_id="[TASK-ID]" version="2.1" framework="RIPER-5">
+
+<!-- READ-ONLY PHASE. No source modifications. No implementation decisions. -->
+<research_status>
+  <phase>RESEARCH</phase>
+  <mode>READ-ONLY</mode>
+  <research_owner></research_owner>
+  <last_updated></last_updated>
+  <halting_status>IN_PROGRESS</halting_status> <!-- IN_PROGRESS | READY_FOR_SYNTHESIS | HALTED_COMPLETE -->
+</research_status>
+
+---
+
+## 1. Current Behavior & Task Grounding
+
+<current_behavior>
+  [Observable system behavior prior to this change, based on evidence.]
+</current_behavior>
+
+<task_grounding>
+  <actual_intent>
+    [Core underlying objective, disentangled from premature implementation suggestions]
+  </actual_intent>
+  <architectural_invariants>
+    - [Invariant 1: System-wide conditions that must remain true]
+  </architectural_invariants>
+  <negative_scope>
+    - [Negative constraints / Out of scope: Explicit boundaries that must not be modified]
+  </negative_scope>
+</task_grounding>
+
+---
+
+## 2. "Trace before Design" Protocol & Execution Flows
+
+<!-- MANDATORY: MUST TRACE BOTH PATHS BEFORE PROGRESSING TO INNOVATE (DECISION.MD) -->
+<trace_before_design>
+
+### 2.1 Happy Path Flow
+```text
+[Entry Point: API Endpoint / CLI Command / Event / UI Action]
+  → [Auth & Payload Validation / Token Check]
+  → [Domain & Business Logic Processing / Orchestration]
+  → [State Mutation & Transaction Commit (DB / Cache / Queue)]
+  → [Successful Output / HTTP 200 / Event Emitted / State Mutated]
+```
+
+### 2.2 Error & Rollback Path Flow
+```text
+[Failure Trigger: Invalid Input / Timeout / Constraint Violation / Downstream 5xx]
+  → [Detection & Exception Handling Boundary / Filter]
+  → [Rollback / Compensating Transaction / Resource Cleanup]
+  → [Error Response / HTTP Status / Structured Diagnostic Logging]
+```
+
+### 2.3 Data-Flow Slices (ARISE Def-Use Chains)
+<!-- Causal slices (10-50 lines) isolating exact variables instead of reading full files -->
+- **Backward Slice (Defect Origin / Cause):** [Target Variable / Symptom] ← [Statement at file:line] ← [Input / State at file:line]
+- **Forward Slice (Blast Radius / Impact):** [Mutation Point at file:line] → [Dependent Consumer at file:line] → [Data Sink / API Output at file:line]
+
+</trace_before_design>
+
+---
+
+## 3. Constraint & Invariant Discovery
+
+<constraints_and_invariants>
+
+### 3.1 Conventions Catalog
+| Convention | Observed Codebase Norm | Reference File / Pattern |
+|---|---|---|
+| **Naming Conventions** | [File, class, function, variable, event casing & suffixes] | |
+| **Layering & Boundaries** | [Layer hierarchy: Controller → Service → Repo, forbidden imports] | |
+| **Exception Handling** | [Strategy: custom domain errors, Result/Either type, global filter] | |
+
+### 3.2 Concurrency & Transactional Boundaries
+| Area | Current Mechanism | Anchor / Evidence | Failure Risk (Race / Deadlock / Leak) |
+|---|---|---|---|
+| **Transaction Boundary** | [Where transaction begins / commits / rolls back] | | |
+| **Concurrency / Locks** | [Mutex, optimistic/pessimistic lock, async await, queue isolation] | | |
+| **Idempotency** | [Idempotency key, deduplication key, retry safety] | | |
+
+### 3.3 Schema Invariants & Database Constraints
+| Invariant / Constraint | Table / Field | Enforcement Level (DB vs App) | Failure Consequence |
+|---|---|---|---|
+| **Foreign Keys / Relations** | [Foreign keys, cascade rules, cardinality] | | |
+| **Uniqueness** | [Unique index, composite unique keys] | | |
+| **Check Constraints** | [Check constraint, not null, valid enums] | | |
+| **Domain Invariants** | [Non-negative balance, one-way state progression] | | |
+
+</constraints_and_invariants>
+
+---
+
+## 4. Relevant Components & Code Evidence
+
+<components_and_snippets>
+
+| File / Symbol | Role | Code Anchor / Line Ref | Confidence |
+|---|---|---|---|
+| | | | |
+
+### Key Direct Anchor Snippets
+```text
+// Extract direct function signatures, interfaces, or critical logic blocks
+// MANDATORY: Must include exact file path and line numbers (file:line)
+```
+
+</components_and_snippets>
+
+---
+
+## 5. Dependencies & System Boundaries
+
+<boundaries>
+  <callers>[Who invokes this target code]</callers>
+  <callees>[What downstream services/methods are invoked]</callees>
+  <persistence>[DB tables, cache keys, queues]</persistence>
+  <external_systems>[Third-party APIs, external message brokers]</external_systems>
+  <security_boundary>[Auth context, permission checks, trust boundary]</security_boundary>
+</boundaries>
+
+---
+
+## 6. Side-Effects & Breaking Changes Analysis
+
+<side_effects_and_breaking_changes>
+
+| Affected Component | Impact Type (Breaking / Non-breaking) | Upstream / Downstream Blast Radius | Mitigation Strategy |
+|---|---|---|---|
+| | | | |
+
+</side_effects_and_breaking_changes>
+
+---
+
+## 7. Existing Tests & Git Archeology
+
+<existing_tests>
+
+| Test File / Case | Covered Behavior | Gap / Missing Assertion |
+|---|---|---|
+| | | |
+
+</existing_tests>
+
+### 7.1 Minimal Reproduction Script (ReProAgent PoC)
+<!-- MANDATORY for bug fixes & defect tasks: Standalone test or script executing in sandbox that fails deterministically on current code -->
+<repro_poc>
+  <test_path>[e.g. test/repro/issue-fix.test.ts]</test_path>
+  <execution_command>[e.g. npm test -- test/repro/issue-fix.test.ts]</execution_command>
+  <baseline_outcome>CONFIRMED_FAILING</baseline_outcome> <!-- CONFIRMED_FAILING | NOT_APPLICABLE (new feature) -->
+  <failure_output_summary>[Concise error/trace verifying exact defect symptom]</failure_output_summary>
+</repro_poc>
+
+<git_archeology>
+  - [Commit hash / Blame line]: [Historical context and rationale]
+  - [Relevant ADR]: [Architectural decision records]
+</git_archeology>
+
+---
+
+## 8. Runtime & Configuration
+
+<runtime_config>
+  [Environment variables, feature flags, configuration files governing this flow.]
+</runtime_config>
+
+---
+
+## 9. Source-of-Truth Analysis
+
+<source_of_truth_analysis>
+
+| Source | Governing Rule | Authority Level | Conflict / Ambiguity |
+|---|---|---|---|
+| | | | |
+
+</source_of_truth_analysis>
+
+---
+
+## 10. Evidence Classification & Epistemic Ledger
+
+<!-- NEVER mix facts, observations, and hypotheses in the same unclassified list -->
+<evidence>
+  <confirmed>
+    <!-- Directly verified from source code, tests, or definitive docs (file:line) -->
+    -
+  </confirmed>
+
+  <observed>
+    <!-- Inferred from logs, runtime behaviors, or indirect cues — not yet strictly proven -->
+    -
+  </observed>
+
+  <hypothesized>
+    <!-- Assumptions that require explicit validation before execution -->
+    -
+  </hypothesized>
+</evidence>
+
+<assumptions>
+  [Explicit assumptions shaping conclusions. Flag uncertainty: LOW / MEDIUM / HIGH.]
+  - [Assumption 1] — Uncertainty: [LOW/MEDIUM/HIGH] — Verification Plan: [...]
+</assumptions>
+
+---
+
+## 11. Impacted Files
+
+<impacted_files>
+  - `path/to/file` — [Reason for impact]
+</impacted_files>
+
+---
+
+## 12. Open Decisions
+
+<open_decisions>
+  <!-- Unresolved architectural/business questions escalated to Innovate (decision.md) -->
+  -
+</open_decisions>
+
+---
+
+## 13. Halting Predicate & Exit Criteria (Gate G0)
+
+<halting_verification>
+  - [ ] **L_known (Localization):** Target files and symbols are located with precise code anchors (`file:line`), callers and callees are mapped.
+  - [ ] **B_understood (Behavior):** Both Happy Path and Error/Rollback Path are traced; defect mechanism or baseline behavior is understood.
+  - [ ] **C_known (Constraints):** Concurrency, schema invariants, and layering boundaries are cataloged.
+  - [ ] **P_checked (Patterns):** Canonical patterns and conventions in current codebase are identified.
+  - [ ] **V_known (Verification):** Reproduction test (ReProAgent PoC confirmed failing on current code for defects) or concrete automated verifier command is identified.
+</halting_verification>
+
+<research_exit_criteria>
+  - [ ] **Trace before Design:** Happy Path, Error/Rollback Path, and Data-Flow Slices documented.
+  - [ ] **Constraint & Invariant Discovery:** Conventions, concurrency boundaries, and schema constraints checked.
+  - [ ] **Code Evidence:** Direct file paths and key snippets extracted.
+  - [ ] **Side-effects & Breaking Changes:** Backward compatibility and blast radius analyzed.
+  - [ ] **Reproduction Proof (PoC):** Standalone reproduction script/test confirmed failing on current code for defects.
+  - [ ] **Assumptions & Uncertainties:** Assumptions classified with uncertainty ratings.
+  - [ ] **Evidence Classification:** Findings categorized into Confirmed / Observed / Hypothesized.
+  - [ ] **Boundary & Tests:** Dependencies and test gaps documented.
+</research_exit_criteria>
+
+</research_context>

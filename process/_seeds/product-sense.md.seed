@@ -1,0 +1,73 @@
+# Product Sense & User Experience Standards (Product Sense Document)
+
+<product_sense version="1.0" framework="RIPER-5">
+
+<!-- This file captures durable product judgment and user experience standards
+     that AI coding agents cannot infer reliably from code alone.
+     Every technical feature generated must align with the product invariants below. -->
+
+<metadata>
+  <target_product>[Application / System Name]</target_product>
+  <primary_user>[Primary Target Persona: e.g. Software Engineer, Accountant, End Consumer]</primary_user>
+  <last_updated>[YYYY-MM-DD]</last_updated>
+  <product_owner>[Product Owner / Tech Lead Name]</product_owner>
+</metadata>
+
+---
+
+## 1. Product Core & Jobs To Be Done (JTBD)
+
+<product_core>
+  * **Job To Be Done (JTBD):**
+    * When `[triggering context]`, the user wants to `[specific action]`, so that `[expected outcome/value]`.
+  * **Primary Frustration to Eliminate:**
+    * `[Description of the friction or pain point caused by existing legacy workflows or alternatives]`
+  * **Quality Bar for Acceptance:**
+    * Prioritize user-visible reliability and predictable state over sheer feature count.
+    * Every feature must have a crisp, one-sentence value proposition.
+</product_core>
+
+---
+
+## 2. Mandatory Interaction Invariants
+
+<interaction_invariants>
+  1. **Zero Silent Failures:**
+     * All failures—whether due to invalid input, network disconnection, or backend faults—must surface actionable, empathetic feedback to the user.
+     * NEVER swallow exceptions (empty catch blocks) or leave the user staring at a blank screen.
+  2. **Loading States & Visual Feedback:**
+     * Any asynchronous action lasting > 200ms must render visual feedback (spinner, skeleton loader, progress indicator).
+     * Prevent duplicate submissions by disabling action buttons immediately upon invocation.
+  3. **Destructive Actions Safeguards:**
+     * Irreversible mutations (deleting accounts/records, processing payments) strictly require confirmation dialogs or undo grace periods.
+     * State mutations involving sensitive data or financial transactions must enforce idempotency keys.
+  4. **Empty States & Data Overflow:**
+     * Every list/collection view must account for 4 UI states: *Loading*, *Empty* (with clear call-to-action to create), *Populated*, and *Error*.
+     * High-volume tabular or list data must be virtualized or paginated; never freeze the browser thread.
+</interaction_invariants>
+
+---
+
+## 3. Bridging Implementation and Specification (Spec-Gap Escalation)
+
+<spec_gap_rules>
+  * **Ambiguity is a Spec Gap, Not Permission to Guess:**
+    * If an interaction flow or edge case is unspecified, the agent MUST NOT guess or invent UI behavior.
+    * Halt speculative coding, flag `[SPEC-GAP]` in `task.md`, and request clarification from the Product Owner or BA agent.
+  * **Synchronize Specs on User-Visible Changes:**
+    * If implementation constraints force an alteration to what users see or how they interact, the matching spec in `process/` must be updated immediately.
+</spec_gap_rules>
+
+---
+
+## 4. Product No-Go Anti-Patterns
+
+<no_go_patterns>
+  * ❌ **Exposing Raw Stack Traces to UI:** Leaking SQL queries, stack dumps, or technical exception traces to end users.
+  * ❌ **Hidden Destructive Cascades:** Silently deleting related assets or records without prior explicit warning.
+  * ❌ **Form Data Loss on Error:** Clearing or wiping valid user inputs when a single form validation error occurs.
+  * ❌ **Stale or Desynchronized UI State:** Failing to revalidate or update client views following successful mutations.
+  * ❌ **Ghost Features:** Introducing UI buttons or menu items that lead to dead-ends ("Coming soon") without operational capability.
+</no_go_patterns>
+
+</product_sense>

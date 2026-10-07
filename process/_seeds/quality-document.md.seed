@@ -1,0 +1,76 @@
+# Long-Term Codebase Health Snapshot (Quality Document)
+
+<quality_document version="1.0" framework="RIPER-5">
+
+<!-- Evaluates ongoing codebase health across product domains and architectural layers.
+     Update periodically (per sprint, milestone, or significant refactoring) to track
+     whether harness improvements and engineering discipline make the system stronger. -->
+
+<metadata>
+  <snapshot_id>SNAP-[YYYYMMDD]</snapshot_id>
+  <evaluated_date>[YYYY-MM-DD]</evaluated_date>
+  <evaluator>[Human Engineer | Non-Implementer Agent]</evaluator>
+  <overall_grade>[A | B | C | D]</overall_grade>
+</metadata>
+
+---
+
+## 1. Product Domain Quality Grading
+
+<product_domains>
+  <!-- Grade scale:
+       A: Robust tests, high agent legibility, deterministic verification, zero known gaps.
+       B: Solid tests, minor ambiguity in specs or edge cases, reliable in normal runs.
+       C: Flaky tests, incomplete verification, agent frequently misinterprets invariants.
+       D: Untested, fragile boundaries, high regression rate upon modification. -->
+
+  | Domain / Subsystem | Verification Status | Agent Legibility | Test Stability | Key Gaps | Grade |
+  |--------------------|---------------------|------------------|----------------|----------|-------|
+  | Core Domain        | Full Automated      | High (Typed AST) | 99% Deterministic | None | A |
+  | Auth & Security    | Semi-Automated      | Moderate         | Flaky timeout  | Refresh token race | B |
+  | Billing / Payments | Manual E2E only     | Low (Untyped)    | No mocks       | Missing webhook replay | C |
+  | Reporting & Export | Automated Unit      | High             | 100%           | Edge case CSV quote | B |
+</product_domains>
+
+---
+
+## 2. Architectural Layer Boundary Grading
+
+<architectural_layers>
+  | Layer | Boundary Enforcement | Agent Legibility | Coupling Risk | Grade |
+  |-------|----------------------|------------------|---------------|-------|
+  | Domain Entities & Invariants | Strict Purity (No I/O) | High (Explicit types) | Low | A |
+  | Application Use Cases        | Port-based DI          | High                  | Low | A |
+  | Infrastructure & Adapters    | Isolated in adapters/  | Moderate              | Medium | B |
+  | UI & Presentation            | Component Isolation    | Moderate (DOM tree)   | Low | B |
+  | Config & Environment         | Strict validation      | High (.env schema)    | Low | A |
+</architectural_layers>
+
+---
+
+## 3. Harness Simplification & Component Ablation Benchmark
+
+<harness_simplification>
+  <!-- Every harness component encodes an assumption about what models cannot do.
+       As models evolve, run controlled variable exclusion tests:
+       1. Record baseline quality snapshot below.
+       2. Temporarily remove one harness rule/seed (e.g. detailed prompt constraints).
+       3. Run benchmark task suite.
+       4. Compare scores: if quality does not degrade, retire the component to reduce token tax. -->
+
+  | Evaluated Component | Removal Date | Benchmark Result | Decision |
+  |---------------------|--------------|------------------|----------|
+  | [e.g. Detailed syntax prompt] | [YYYY-MM-DD] | Pass rate 100% (No regression) | [RETIRED / RETAINED] |
+</harness_simplification>
+
+---
+
+## 4. Historical Snapshot Log
+
+<snapshot_history>
+  | Date | Snapshot ID | Overall Grade | Primary Bottleneck | Strategic Action Taken |
+  |------|-------------|---------------|--------------------|------------------------|
+  | [YYYY-MM-DD] | SNAP-001 | B | Infrastructure test flakiness | Introduced mock server harness |
+</snapshot_history>
+
+</quality_document>

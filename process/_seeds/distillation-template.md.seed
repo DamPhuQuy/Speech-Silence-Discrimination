@@ -1,0 +1,43 @@
+# Knowledge Distillation: [TASK-ID]
+
+<knowledge_distillation task_id="[TASK-ID]" version="1.0" framework="RIPER-5">
+
+<!-- MANDATORY BEFORE CLOSING GATE G3 WHEN TASK HAS RETRIES >= 2 OR FAILURE_MEMORY -->
+<distillation_control>
+  <trigger_reason>[RETRY_COUNT >= 2 | STALL_RESOLVED | COMPLEX_INTEGRATION]</trigger_reason>
+  <target_convention>.agents/conventions/repo-learnings.md</target_convention>
+  <distilled_by>@engineer</distilled_by>
+  <distilled_date></distilled_date>
+</distillation_control>
+
+---
+
+## 1. Failure Context & Symptom
+
+<failure_context>
+  <signature>[Describe the error signature or bug symptom encountered during execution]</signature>
+  <root_cause>[Deep root cause: framework mechanism, schema quirk, or implicit config]</root_cause>
+</failure_context>
+
+---
+
+## 2. Extracted Repository Rule
+
+<extracted_rule>
+  <rule_id>RULE-[ID]</rule_id>
+  <title>[Concise title for preventative invariant]</title>
+  <context>[When this rule triggers, which module or layer]</context>
+  <anti_pattern>[Flawed approach or error-prone code pattern]</anti_pattern>
+  <mandatory_pattern>[Correct and mandatory coding pattern to follow]</mandatory_pattern>
+</extracted_rule>
+
+---
+
+## 3. Procedural Memory Promotion
+
+<procedural_promotion>
+  - [ ] The rule above has been appended to `.agents/conventions/repo-learnings.md`.
+  - [ ] Rule is concise, self-contained, and machine-actionable (< 20 lines).
+</procedural_promotion>
+
+</knowledge_distillation>
